@@ -10,8 +10,10 @@
     <meta name="description" content="Point your camera at anything to identify its color by name">
     <meta property="og:title" content="What Color Is This?">
     <meta property="og:description" content="Point your camera at anything to identify its color by name">
-    <meta property="og:url" content="https://dr.eamer.dev/whatcolor/">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:url" content="https://whatcoloristhis.one/">
+    <meta property="og:image" content="https://whatcoloristhis.one/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://whatcoloristhis.one/og-image.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -251,6 +253,35 @@
             outline: 2px solid var(--accent);
             outline-offset: 2px;
         }
+
+        .wb-btn {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 15;
+            height: 44px;
+            border-radius: 22px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 0 14px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-family: inherit;
+            transition: background var(--transition);
+        }
+        .wb-btn.visible { display: flex; }
+        .wb-btn.calibrated { background: rgba(52, 211, 153, 0.35); border-color: rgba(52, 211, 153, 0.5); }
+        .wb-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 
         .camera-message {
             position: absolute;
@@ -1489,6 +1520,10 @@
                     <path d="M12 7a4 4 0 0 0-4 4c0 1.5.8 3 2 4h4c1.2-1 2-2.5 2-4a4 4 0 0 0-4-4z"/>
                 </svg>
             </button>
+            <button class="wb-btn" id="wb-btn" aria-label="Set white balance">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                <span id="wb-label">Set White</span>
+            </button>
         </div>
         <div class="camera-controls" id="camera-controls">
             <button class="capture-btn" id="capture-btn" aria-label="Capture color from camera">
@@ -1790,8 +1825,9 @@
         'use strict';
 
         // --- API Configuration ---
-        const isLive = window.location.hostname.endsWith('.live');
-        const API = isLive ? '/api' : `${window.location.protocol}//${window.location.host}/whatcolor/api`;
+        const host = window.location.hostname;
+        const isStandalone = host.endsWith('.one') || host.endsWith('.live');
+        const API = isStandalone ? '/api' : `${window.location.protocol}//${host}/whatcolor/api`;
 
         // --- DOM References ---
         const $ = (sel) => document.querySelector(sel);
@@ -2012,6 +2048,7 @@
                 torchBtn.classList.toggle('visible', torchSupported);
                 torchOn = false;
                 torchBtn.classList.remove('on');
+                wbBtn.classList.add('visible');
 
                 cameraCrosshair.style.display = '';
                 cameraControls.style.display = '';
@@ -2030,6 +2067,7 @@
             videoEl.srcObject = null;
             torchOn = false;
             torchBtn.classList.remove('on', 'visible');
+            wbBtn.classList.remove('visible');
         }
 
         function showCameraError(err) {
@@ -2085,6 +2123,47 @@
             };
         }
 
+        // --- White Balance Calibration ---
+        const wbBtn = $('#wb-btn');
+        const wbLabel = $('#wb-label');
+        let wbGains = null; // {kR, kG, kB} or null
+
+        function applyWB(rgb) {
+            if (!wbGains) return rgb;
+            return {
+                r: Math.min(255, Math.round(rgb.r * wbGains.kR)),
+                g: Math.min(255, Math.round(rgb.g * wbGains.kG)),
+                b: Math.min(255, Math.round(rgb.b * wbGains.kB)),
+            };
+        }
+
+        wbBtn.addEventListener('click', () => {
+            if (wbGains) {
+                // Reset calibration
+                wbGains = null;
+                wbBtn.classList.remove('calibrated');
+                wbLabel.textContent = 'Set White';
+                announce('White balance reset.');
+                return;
+            }
+            if (!cameraStream || videoEl.readyState < 2) return;
+            captureCanvas.width = videoEl.videoWidth;
+            captureCanvas.height = videoEl.videoHeight;
+            captureCtx.drawImage(videoEl, 0, 0);
+            const cx = Math.floor(captureCanvas.width / 2);
+            const cy = Math.floor(captureCanvas.height / 2);
+            const ref = sampleArea(captureCtx, cx, cy, 7);
+            if (!ref || ref.r < 10 || ref.g < 10 || ref.b < 10) {
+                announce('Point at a white or light surface and try again.');
+                return;
+            }
+            wbGains = { kR: 255 / ref.r, kG: 255 / ref.g, kB: 255 / ref.b };
+            wbBtn.classList.add('calibrated');
+            wbLabel.textContent = 'Reset WB';
+            if (navigator.vibrate) navigator.vibrate([30, 30, 30]);
+            announce('White balance calibrated. Colors will now be corrected.');
+        });
+
         // --- Capture from Camera ---
         captureBtn.addEventListener('click', () => {
             if (!cameraStream || videoEl.readyState < 2) return;
@@ -2095,9 +2174,10 @@
 
             const cx = Math.floor(captureCanvas.width / 2);
             const cy = Math.floor(captureCanvas.height / 2);
-            const rgb = sampleArea(captureCtx, cx, cy, 7);
+            let rgb = sampleArea(captureCtx, cx, cy, 7);
             if (!rgb) return;
 
+            rgb = applyWB(rgb);
             const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
             if (navigator.vibrate) navigator.vibrate(50);
             identifyColor(hex);
@@ -2387,7 +2467,7 @@
                 const resp = await fetch(API + '/accessible', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ hex: currentResult.matchedHex })
+                    body: JSON.stringify({ hex: currentResult.matchedHex, cvd_type: loadSettings().cvdType || 'none' })
                 });
                 if (!resp.ok) throw new Error('API error');
                 const data = await resp.json();
@@ -2400,7 +2480,25 @@
         function renderAccessible(container, data) {
             let html = '';
 
-            // Section 1: Universal Safe
+            // Personalized section (if user has CVD type set)
+            if (data.personal) {
+                const p = data.personal;
+                const tc = getTextColor(p.hex);
+                const typeNames = { protanopia: 'Protanopia (red-weak)', deuteranopia: 'Deuteranopia (green-weak)', tritanopia: 'Tritanopia (blue-weak)' };
+                html += `<div class="a11y-section">
+                    <div class="a11y-section-label">Your Vision</div>
+                    <div class="a11y-section-desc">Based on your settings: ${escapeHtml(typeNames[p.type] || p.type)}</div>
+                    <div class="a11y-palette">
+                        <div class="a11y-chip" style="background:${p.hex};color:${tc};flex:none;padding:14px 24px;">
+                            <span class="a11y-chip-desc">appears as</span>
+                            <span style="font-size:1rem;font-weight:700;text-transform:capitalize">${escapeHtml(p.descriptor)}</span>
+                            <span class="a11y-chip-hex hex-copy">${p.hex.toUpperCase()}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            // Universal Safe
             if (data.universal_safe && data.universal_safe.length) {
                 html += `<div class="a11y-section">
                     <div class="a11y-section-label">Universal Safe</div>
@@ -2408,9 +2506,9 @@
                     <div class="a11y-palette">`;
                 for (const c of data.universal_safe) {
                     const tc = getTextColor(c.hex);
-                    const badge = c.is_input ? '<span class="a11y-chip-badge">yours</span>' : '';
+                    const badge = c.role === 'your color' ? '<span class="a11y-chip-badge">yours</span>' : '';
                     html += `<div class="a11y-chip" style="background:${c.hex};color:${tc}">
-                        <span class="a11y-chip-desc">${escapeHtml(c.descriptor || c.name || '')}</span>
+                        <span class="a11y-chip-desc">${escapeHtml(c.descriptor || '')}</span>
                         <span class="a11y-chip-hex hex-copy">${c.hex.toUpperCase()}</span>
                         ${badge}
                     </div>`;
@@ -2418,7 +2516,7 @@
                 html += `</div></div>`;
             }
 
-            // Section 2: High Contrast Pairs
+            // High Contrast Pairs
             if (data.high_contrast && data.high_contrast.length) {
                 html += `<div class="a11y-section">
                     <div class="a11y-section-label">High Contrast</div>
@@ -2427,24 +2525,25 @@
                 for (const c of data.high_contrast) {
                     const tc = getTextColor(c.hex);
                     html += `<div class="a11y-chip" style="background:${c.hex};color:${tc}">
-                        <span class="a11y-chip-desc">${escapeHtml(c.descriptor || c.name || '')}</span>
+                        <span class="a11y-chip-desc">${escapeHtml(c.descriptor || '')}</span>
                         <span class="a11y-chip-hex hex-copy">${c.hex.toUpperCase()}</span>
                     </div>`;
                 }
                 html += `</div></div>`;
             }
 
-            // Section 3: CVD Simulation
-            if (data.simulations && data.simulations.length) {
+            // CVD Simulations (object, not array)
+            if (data.simulations && typeof data.simulations === 'object') {
+                const typeNames = { protanopia: 'Protanopia', deuteranopia: 'Deuteranopia', tritanopia: 'Tritanopia' };
                 html += `<div class="a11y-section">
                     <div class="a11y-section-label">Color Vision Simulation</div>
                     <div class="a11y-section-desc">How this color appears under different types of color vision</div>
                     <div class="a11y-simulations">`;
-                for (const sim of data.simulations) {
+                for (const [type, sim] of Object.entries(data.simulations)) {
                     html += `<div class="a11y-sim">
                         <div class="a11y-sim-swatch" style="background:${sim.hex}"></div>
-                        <div class="a11y-sim-type">${escapeHtml(sim.type || '')}</div>
-                        <div class="a11y-sim-desc">${escapeHtml(sim.descriptor || sim.name || '')}</div>
+                        <div class="a11y-sim-type">${escapeHtml(typeNames[type] || type)}</div>
+                        <div class="a11y-sim-desc">${escapeHtml(sim.descriptor || '')}</div>
                         <div class="a11y-sim-hex hex-copy">${sim.hex.toUpperCase()}</div>
                     </div>`;
                 }

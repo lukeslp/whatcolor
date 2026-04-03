@@ -8,7 +8,11 @@ from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
 app = Flask(__name__, static_folder='.')
-CORS(app, origins=["https://dr.eamer.dev", "https://whatcolor.live"])
+CORS(app, origins=[
+    "https://dr.eamer.dev",
+    "https://whatcoloristhis.one",
+    "https://whatcoloristhat.one",
+])
 
 # ---------------------------------------------------------------------------
 # Color conversion utilities (pure Python, no external deps)
@@ -583,6 +587,7 @@ def accessible():
     if not data or 'hex' not in data:
         return jsonify({'error': 'Missing "hex" field'}), 400
 
+    cvd_type = data.get('cvd_type', 'none')
     hex_str = data['hex'].strip().lstrip('#')
     if len(hex_str) != 6:
         return jsonify({'error': 'Invalid hex color value'}), 400
@@ -669,11 +674,21 @@ def accessible():
             'delta_e': round(w['distance'], 1),
         })
 
+    # --- Personalized simulation if CVD type specified ---
+    personal_sim = None
+    if cvd_type in simulations:
+        personal_sim = {
+            'type': cvd_type,
+            'hex': simulations[cvd_type]['hex'],
+            'descriptor': simulations[cvd_type]['descriptor'],
+        }
+
     return jsonify({
         'input': hex_str,
         'universal_safe': universal_safe,
         'high_contrast': high_contrast,
         'simulations': simulations,
+        'personal': personal_sim,
     })
 
 
