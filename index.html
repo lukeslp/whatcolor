@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>What Color Is This?</title>
     <meta name="description" content="Point your camera at anything to identify its color by name">
@@ -16,7 +18,10 @@
     <meta name="apple-mobile-web-app-title" content="What Color Is This?">
     <meta name="theme-color" content="#1a1a1a">
     <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icon-144.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icon-128.png">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -892,6 +897,101 @@
 
         /* Import file input */
         .import-input { display: none; }
+
+        /* --- Onboarding Tour --- */
+        .tour-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .tour-overlay.visible { opacity: 1; }
+        .tour-overlay.hidden { display: none; }
+
+        .tour-card {
+            max-width: 340px;
+            width: 100%;
+            text-align: center;
+            transform: translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            opacity: 0;
+        }
+        .tour-overlay.visible .tour-card {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .tour-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+        .tour-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #f0f0f0;
+        }
+        .tour-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #aaa;
+            margin-bottom: 28px;
+        }
+        .tour-dots {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .tour-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #444;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .tour-dot.active {
+            background: #6c8cff;
+            transform: scale(1.3);
+        }
+        .tour-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .tour-btn {
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            min-height: 48px;
+        }
+        .tour-btn:active { transform: scale(0.96); }
+        .tour-btn-primary {
+            background: #6c8cff;
+            color: #fff;
+        }
+        .tour-btn-primary:hover { background: #5a7ae6; }
+        .tour-btn-skip {
+            background: transparent;
+            color: #777;
+            border: 1px solid #444;
+        }
+        .tour-btn-skip:hover { color: #aaa; border-color: #666; }
     </style>
 </head>
 <body>
@@ -1895,6 +1995,104 @@
         }
 
         init();
+    })();
+    </script>
+    <!-- ========== ONBOARDING TOUR ========== -->
+    <div class="tour-overlay hidden" id="tour" role="dialog" aria-modal="true" aria-label="Welcome tour">
+        <div class="tour-card">
+            <span class="tour-icon" id="tour-icon" aria-hidden="true"></span>
+            <div class="tour-title" id="tour-title"></div>
+            <div class="tour-text" id="tour-text"></div>
+            <div class="tour-dots" id="tour-dots"></div>
+            <div class="tour-actions">
+                <button class="tour-btn tour-btn-skip" id="tour-skip">Skip</button>
+                <button class="tour-btn tour-btn-primary" id="tour-next">Next</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    (function() {
+        const TOUR_KEY = 'whatcolor_tour_done';
+        if (localStorage.getItem(TOUR_KEY)) return;
+
+        const steps = [
+            {
+                icon: '?',
+                title: 'What Color Is This?',
+                text: 'Point your camera at anything and find out exactly what color it is — by name.'
+            },
+            {
+                icon: '\uD83D\uDCF7',
+                title: 'Camera or Photo',
+                text: 'Use your camera for live sampling, or upload any image and tap to pick a color.'
+            },
+            {
+                icon: '\uD83C\uDFA8',
+                title: 'Three-Level ID',
+                text: 'Every color gets a plain-language descriptor ("muted blue"), the closest name from 30,000 colors, and a confidence rating.'
+            },
+            {
+                icon: '\uD83D\uDD17',
+                title: 'Color Harmonies',
+                text: 'See complementary, analogous, and triadic colors — handy for picking outfits, design palettes, or just exploring.'
+            },
+            {
+                icon: '\uD83D\uDCBE',
+                title: 'Save and Label',
+                text: 'Save any color with a personal note. "Sarah\'s favorite color," "that paint sample," whatever matters to you.'
+            }
+        ];
+
+        let current = 0;
+        const overlay = document.getElementById('tour');
+        const icon = document.getElementById('tour-icon');
+        const title = document.getElementById('tour-title');
+        const text = document.getElementById('tour-text');
+        const dots = document.getElementById('tour-dots');
+        const nextBtn = document.getElementById('tour-next');
+        const skipBtn = document.getElementById('tour-skip');
+
+        // Build dots
+        steps.forEach((_, i) => {
+            const d = document.createElement('div');
+            d.className = 'tour-dot' + (i === 0 ? ' active' : '');
+            dots.appendChild(d);
+        });
+
+        function show(idx) {
+            current = idx;
+            const s = steps[idx];
+            icon.textContent = s.icon;
+            title.textContent = s.title;
+            text.textContent = s.text;
+            dots.querySelectorAll('.tour-dot').forEach((d, i) => {
+                d.classList.toggle('active', i === idx);
+            });
+            nextBtn.textContent = idx === steps.length - 1 ? 'Get Started' : 'Next';
+            if (idx === steps.length - 1) skipBtn.style.display = 'none';
+        }
+
+        function dismiss() {
+            overlay.classList.remove('visible');
+            setTimeout(() => overlay.classList.add('hidden'), 400);
+            localStorage.setItem(TOUR_KEY, '1');
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (current < steps.length - 1) show(current + 1);
+            else dismiss();
+        });
+        skipBtn.addEventListener('click', dismiss);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) dismiss();
+        });
+
+        // Show tour after a brief delay
+        show(0);
+        overlay.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => overlay.classList.add('visible'));
+        });
     })();
     </script>
     <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
