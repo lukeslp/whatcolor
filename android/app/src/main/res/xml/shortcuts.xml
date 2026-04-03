@@ -4,8 +4,8 @@
         android:shortcutId="camera"
         android:enabled="true"
         android:icon="@mipmap/ic_launcher"
-        android:shortcutShortLabel="Camera"
-        android:shortcutLongLabel="Open Camera">
+        android:shortcutShortLabel="@string/shortcut_camera_short"
+        android:shortcutLongLabel="@string/shortcut_camera_long">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="https://whatcoloristhis.one/?tab=camera" />
@@ -14,8 +14,8 @@
         android:shortcutId="upload"
         android:enabled="true"
         android:icon="@mipmap/ic_launcher"
-        android:shortcutShortLabel="Upload"
-        android:shortcutLongLabel="Upload Photo">
+        android:shortcutShortLabel="@string/shortcut_upload_short"
+        android:shortcutLongLabel="@string/shortcut_upload_long">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="https://whatcoloristhis.one/?tab=upload" />
@@ -24,8 +24,8 @@
         android:shortcutId="random"
         android:enabled="true"
         android:icon="@mipmap/ic_launcher"
-        android:shortcutShortLabel="Random"
-        android:shortcutLongLabel="Random Color">
+        android:shortcutShortLabel="@string/shortcut_random_short"
+        android:shortcutLongLabel="@string/shortcut_random_long">
         <intent
             android:action="android.intent.action.VIEW"
             android:data="https://whatcoloristhis.one/?tab=random" />
