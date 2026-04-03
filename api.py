@@ -12,6 +12,7 @@ CORS(app, origins=[
     "https://dr.eamer.dev",
     "https://whatcoloristhis.one",
     "https://whatcoloristhat.one",
+    "https://whatcolouristhat.com",
 ])
 
 # ---------------------------------------------------------------------------
@@ -528,7 +529,7 @@ last_color = None
 def index():
     """Serve the main HTML page with per-domain meta tags."""
     host = request.host.split(':')[0]
-    if 'whatcoloristhat' in host:
+    if 'whatcoloristhat' in host or 'whatcolouristhat' in host:
         # Read and patch meta tags for the "that" domain
         with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'index.html')) as f:
             html = f.read()

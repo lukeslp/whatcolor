@@ -18,7 +18,7 @@
     // Per-domain branding
     (function() {
         var h = location.hostname;
-        if (h.indexOf('whatcoloristhat') !== -1) {
+        if (h.indexOf('whatcoloristhat') !== -1 || h.indexOf('whatcolouristhat') !== -1) {
             document.title = 'What Color Is That?';
             var m = document.querySelectorAll('meta');
             for (var i = 0; i < m.length; i++) {
@@ -1852,7 +1852,7 @@
 
         // --- API Configuration ---
         const host = window.location.hostname;
-        const isStandalone = host.endsWith('.one') || host.endsWith('.live');
+        const isStandalone = host.endsWith('.one') || host.endsWith('.live') || host === 'whatcolouristhat.com';
         const API = isStandalone ? '/api' : `${window.location.protocol}//${host}/whatcolor/api`;
 
         // --- DOM References ---
