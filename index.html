@@ -1137,30 +1137,7 @@
             border: 0;
         }
 
-        /* --- Settings Button --- */
-        .settings-gear {
-            position: fixed;
-            top: calc(env(safe-area-inset-top, 0px) + 12px);
-            right: 12px;
-            z-index: 90;
-            width: 40px;
-            height: 40px;
-            min-width: 44px;
-            min-height: 44px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: none;
-            color: rgba(255,255,255,0.6);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.2s ease, background 0.2s ease;
-        }
-        .settings-gear:hover { color: rgba(255,255,255,0.9); background: rgba(0,0,0,0.5); }
-        .settings-gear svg { width: 20px; height: 20px; }
+        /* settings-gear class removed — settings is now a tab */
 
         /* --- Settings Panel --- */
         .settings-section {
@@ -1396,13 +1373,6 @@
     </style>
 </head>
 <body>
-
-    <!-- Settings gear -->
-    <button class="settings-gear" id="settings-gear" aria-label="Settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
-    </button>
 
     <!-- Settings modal -->
     <div class="modal-overlay" id="settings-overlay"></div>
@@ -1790,6 +1760,11 @@
             </svg>
             Random
         </button>
+        <button class="tab-btn" id="tab-settings" aria-label="Settings" tabindex="-1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+        </button>
     </nav>
 
     <script>
@@ -1973,6 +1948,7 @@
         }
 
         tabBtns.forEach(btn => {
+            if (btn.id === 'tab-settings') return; // settings opens a modal, not a tab
             btn.addEventListener('click', () => switchTab(btn.id));
         });
 
@@ -2525,7 +2501,7 @@
             saveSettings(settingsState);
         });
 
-        document.getElementById('settings-gear').addEventListener('click', () => {
+        document.getElementById('tab-settings').addEventListener('click', () => {
             openModal('settings-overlay', 'settings-modal');
         });
         document.getElementById('settings-close').addEventListener('click', () => {
