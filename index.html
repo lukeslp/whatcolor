@@ -650,33 +650,20 @@
         .result-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         .result-close svg { width: 18px; height: 18px; }
 
-        .result-swatches {
-            display: flex;
-            gap: 12px;
-            padding: 16px 20px;
-        }
         .result-swatch {
-            flex: 1;
-            border-radius: var(--radius-sm);
-            height: 80px;
+            margin: 16px 20px;
+            border-radius: var(--radius);
+            height: 72px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
             position: relative;
         }
-        .result-swatch-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            opacity: 0.7;
-            font-weight: 500;
-        }
         .result-swatch-hex {
-            font-size: 0.85rem;
+            font-size: 1.1rem;
             font-family: 'Courier New', monospace;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: 0.04em;
         }
 
         .result-info {
@@ -726,37 +713,51 @@
 
         /* --- Color Harmonies --- */
         .result-harmonies {
-            padding: 12px 20px 4px;
-            display: none;
+            padding: 0 20px 4px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), padding 0.35s ease;
         }
-        .result-harmonies.open { display: block; }
+        .result-harmonies.open {
+            max-height: 500px;
+            padding: 8px 20px 4px;
+        }
+        .harmonies-section {
+            padding: 0 20px;
+        }
         .harmonies-toggle {
             width: 100%;
-            background: none;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
+            background: transparent;
+            border: none;
+            border-top: 1px solid var(--border);
             color: var(--text-muted);
-            font-size: 0.8rem;
-            font-weight: 500;
-            padding: 10px 14px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 14px 0;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            transition: all var(--transition);
+            justify-content: center;
+            gap: 8px;
+            transition: color var(--transition);
             font-family: inherit;
         }
-        .harmonies-toggle:hover { color: var(--text); border-color: var(--text-muted); }
+        .harmonies-toggle:hover { color: var(--text); }
+        .harmonies-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
         .harmonies-toggle svg {
-            width: 16px; height: 16px;
-            transition: transform var(--transition);
+            width: 14px; height: 14px;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .harmonies-toggle.open svg { transform: rotate(180deg); }
+        .harmonies-toggle.open { color: var(--text); }
         .harmony-group {
-            margin-top: 12px;
+            margin-bottom: 14px;
         }
+        .harmony-group:last-child { margin-bottom: 6px; }
         .harmony-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.06em;
             color: var(--text-muted);
@@ -765,15 +766,14 @@
         }
         .harmony-swatches {
             display: flex;
-            gap: 8px;
-            margin-bottom: 10px;
+            gap: 6px;
         }
         .harmony-chip {
             flex: 1;
             border-radius: var(--radius-sm);
-            padding: 10px 8px;
+            padding: 8px 6px;
             text-align: center;
-            min-height: 56px;
+            min-height: 48px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -787,7 +787,7 @@
             opacity: 0.85;
         }
         .harmony-chip-hex {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-family: 'Courier New', monospace;
             font-weight: 600;
             opacity: 0.9;
@@ -1147,15 +1147,8 @@
                 </svg>
             </button>
         </div>
-        <div class="result-swatches">
-            <div class="result-swatch" id="result-sampled">
-                <span class="result-swatch-label">Sampled</span>
-                <span class="result-swatch-hex" id="result-sampled-hex"></span>
-            </div>
-            <div class="result-swatch" id="result-matched">
-                <span class="result-swatch-label">Matched</span>
-                <span class="result-swatch-hex" id="result-matched-hex"></span>
-            </div>
+        <div class="result-swatch" id="result-swatch">
+            <span class="result-swatch-hex" id="result-swatch-hex"></span>
         </div>
         <div class="result-info">
             <div class="result-descriptor" id="result-descriptor"></div>
@@ -1165,9 +1158,9 @@
             <div class="result-values" id="result-values"></div>
             <div class="spinner" id="result-spinner" aria-label="Identifying color..."></div>
         </div>
-        <div style="padding: 0 20px;">
+        <div class="harmonies-section">
             <button class="harmonies-toggle" id="harmonies-toggle" aria-expanded="false" aria-controls="harmonies-panel">
-                Color Harmonies
+                Harmonies
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
         </div>
@@ -1283,10 +1276,8 @@
         const resultOverlay = $('#result-overlay');
         const resultCard = $('#result-card');
         const resultClose = $('#result-close');
-        const resultSampled = $('#result-sampled');
-        const resultSampledHex = $('#result-sampled-hex');
-        const resultMatched = $('#result-matched');
-        const resultMatchedHex = $('#result-matched-hex');
+        const resultSwatch = $('#result-swatch');
+        const resultSwatchHex = $('#result-swatch-hex');
         const resultDescriptor = $('#result-descriptor');
         const resultFamily = $('#result-family');
         const resultName = $('#result-name');
@@ -1629,9 +1620,6 @@
             resultQuality.textContent = '';
             resultQuality.style.display = 'none';
             resultValues.textContent = '';
-            resultMatchedHex.textContent = '';
-            resultMatched.style.background = 'var(--surface-raised)';
-            resultMatched.style.color = 'var(--text)';
             harmoniesPanel.classList.remove('open');
             harmoniesPanel.innerHTML = '';
             harmoniesToggle.classList.remove('open');
@@ -1656,9 +1644,10 @@
                 const quality = match.quality || '';
                 const rgb = match.rgb || [];
 
-                resultMatchedHex.textContent = matchedHex;
-                resultMatched.style.background = matchedHex;
-                resultMatched.style.color = matchedTextColor;
+                // Update swatch to matched color
+                resultSwatch.style.background = matchedHex;
+                resultSwatch.style.color = matchedTextColor;
+                resultSwatchHex.textContent = matchedHex;
 
                 resultDescriptor.textContent = descriptor;
                 resultFamily.textContent = family;
@@ -1728,11 +1717,12 @@
 
         // --- Result Card ---
         function showResult(sampledHex) {
+            // Show swatch with sampled color initially, will update to matched color
             const sampledUpper = sampledHex.toUpperCase();
             const textColor = getTextColor(sampledUpper);
-            resultSampled.style.background = sampledUpper;
-            resultSampled.style.color = textColor;
-            resultSampledHex.textContent = sampledUpper;
+            resultSwatch.style.background = sampledUpper;
+            resultSwatch.style.color = textColor;
+            resultSwatchHex.textContent = sampledUpper;
 
             resultSaveRow.classList.remove('active');
             resultSaveInput.value = '';
