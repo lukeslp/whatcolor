@@ -650,65 +650,101 @@
         .result-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         .result-close svg { width: 18px; height: 18px; }
 
-        .result-swatch {
-            margin: 16px 20px;
-            border-radius: var(--radius);
-            height: 72px;
+        /* --- Result Funnel: family → descriptor → specific name --- */
+        .result-funnel {
+            padding: 16px 20px 12px;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            position: relative;
+            gap: 0;
         }
-        .result-swatch-hex {
-            font-size: 1.1rem;
-            font-family: 'Courier New', monospace;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-        }
-
-        .result-info {
-            padding: 0 20px 8px;
+        .funnel-tier {
             text-align: center;
+            position: relative;
+            width: 100%;
         }
-        .result-descriptor {
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-transform: capitalize;
-            margin-bottom: 2px;
-            letter-spacing: -0.01em;
+        .funnel-tier + .funnel-tier::before {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 10px;
+            background: var(--border);
+            margin: 0 auto 0;
         }
-        .result-family {
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        .result-name {
-            font-size: 1rem;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-        .result-quality {
-            display: inline-block;
-            font-size: 0.65rem;
+        .funnel-family {
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-bottom: 8px;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            padding: 6px 16px;
+            background: var(--surface-raised);
+            border-radius: 20px;
+            display: inline-block;
         }
-        .result-quality[data-quality="exact"] { background: #2d6a4f; color: #b7e4c7; }
-        .result-quality[data-quality="very close"] { background: #2b4c3f; color: #a8d5ba; }
-        .result-quality[data-quality="close"] { background: #3a4a3f; color: #c8d8c0; }
-        .result-quality[data-quality="approximate"] { background: #4a4030; color: #d5c8a0; }
-        .result-quality[data-quality="rough"] { background: #4a3030; color: #d5a0a0; }
-        .result-values {
+        .funnel-descriptor {
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-transform: capitalize;
+            letter-spacing: -0.01em;
+            padding: 4px 0;
+        }
+        .funnel-name {
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 200px;
+        }
+        .funnel-name-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+        .funnel-name-hex {
             font-size: 0.8rem;
             font-family: 'Courier New', monospace;
+            font-weight: 500;
+            opacity: 0.8;
+            cursor: pointer;
+        }
+        .funnel-name-hex:active { opacity: 1; }
+
+        .result-values {
+            font-size: 0.75rem;
+            font-family: 'Courier New', monospace;
             color: var(--text-muted);
+            text-align: center;
+            padding: 4px 20px 8px;
+        }
+
+        /* Tap-to-copy hex anywhere */
+        .hex-copy {
+            cursor: pointer;
+            position: relative;
+        }
+        .hex-copy::after {
+            content: 'copied';
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--accent);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+        .hex-copy.copied::after {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
         }
 
         /* --- Color Harmonies --- */
@@ -1147,17 +1183,22 @@
                 </svg>
             </button>
         </div>
-        <div class="result-swatch" id="result-swatch">
-            <span class="result-swatch-hex" id="result-swatch-hex"></span>
-        </div>
-        <div class="result-info">
-            <div class="result-descriptor" id="result-descriptor"></div>
-            <div class="result-family" id="result-family"></div>
-            <div class="result-name" id="result-name"></div>
-            <span class="result-quality" id="result-quality"></span>
-            <div class="result-values" id="result-values"></div>
+        <div class="result-funnel" id="result-funnel">
+            <div class="funnel-tier">
+                <span class="funnel-family" id="result-family"></span>
+            </div>
+            <div class="funnel-tier">
+                <div class="funnel-descriptor" id="result-descriptor"></div>
+            </div>
+            <div class="funnel-tier">
+                <div class="funnel-name" id="result-name-block">
+                    <span class="funnel-name-text" id="result-name"></span>
+                    <span class="funnel-name-hex hex-copy" id="result-hex" aria-label="Tap to copy hex code"></span>
+                </div>
+            </div>
             <div class="spinner" id="result-spinner" aria-label="Identifying color..."></div>
         </div>
+        <div class="result-values" id="result-values"></div>
         <div class="harmonies-section">
             <button class="harmonies-toggle" id="harmonies-toggle" aria-expanded="false" aria-controls="harmonies-panel">
                 Harmonies
@@ -1276,12 +1317,12 @@
         const resultOverlay = $('#result-overlay');
         const resultCard = $('#result-card');
         const resultClose = $('#result-close');
-        const resultSwatch = $('#result-swatch');
-        const resultSwatchHex = $('#result-swatch-hex');
+        const resultNameBlock = $('#result-name-block');
+        const resultHex = $('#result-hex');
         const resultDescriptor = $('#result-descriptor');
         const resultFamily = $('#result-family');
         const resultName = $('#result-name');
-        const resultQuality = $('#result-quality');
+        // resultQuality removed — quality badges removed from UI
         const resultValues = $('#result-values');
         const resultSpinner = $('#result-spinner');
         const harmoniesToggle = $('#harmonies-toggle');
@@ -1617,9 +1658,10 @@
             resultDescriptor.textContent = '';
             resultFamily.textContent = '';
             resultName.textContent = '';
-            resultQuality.textContent = '';
-            resultQuality.style.display = 'none';
+            resultHex.textContent = '';
             resultValues.textContent = '';
+            resultNameBlock.style.background = '';
+            resultNameBlock.style.color = '';
             harmoniesPanel.classList.remove('open');
             harmoniesPanel.innerHTML = '';
             harmoniesToggle.classList.remove('open');
@@ -1641,23 +1683,16 @@
                 const descriptor = data.descriptor || '';
                 const family = data.family || '';
                 const name = match.name || '';
-                const quality = match.quality || '';
                 const rgb = match.rgb || [];
 
-                // Update swatch to matched color
-                resultSwatch.style.background = matchedHex;
-                resultSwatch.style.color = matchedTextColor;
-                resultSwatchHex.textContent = matchedHex;
-
-                resultDescriptor.textContent = descriptor;
+                // Funnel: family → descriptor → name+swatch
                 resultFamily.textContent = family;
-                resultName.textContent = `"${name}"`;
-                if (quality) {
-                    resultQuality.textContent = quality;
-                    resultQuality.dataset.quality = quality;
-                    resultQuality.style.display = 'inline-block';
-                }
-                resultValues.textContent = `${matchedHex}  ·  rgb(${rgb.join(', ')})`;
+                resultDescriptor.textContent = descriptor;
+                resultName.textContent = name;
+                resultHex.textContent = matchedHex;
+                resultNameBlock.style.background = matchedHex;
+                resultNameBlock.style.color = matchedTextColor;
+                resultValues.textContent = `rgb(${rgb.join(', ')})`;
 
                 // Build harmonies
                 if (data.harmonies) {
@@ -1673,7 +1708,7 @@
                     rgb: rgb
                 };
 
-                announce(`Color identified: ${descriptor}. Closest name: ${name}. ${quality} match. Hex ${matchedHex}.`);
+                announce(`Color identified: ${descriptor}. Closest name: ${name}. Hex ${matchedHex}.`);
             } catch (err) {
                 resultDescriptor.textContent = 'Error';
                 resultName.textContent = err.message || 'Could not identify color';
@@ -1701,7 +1736,7 @@
                     const tc = getTextColor(c.hex);
                     html += `<div class="harmony-chip" style="background:${c.hex};color:${tc}">
                         <span class="harmony-chip-desc">${c.descriptor}</span>
-                        <span class="harmony-chip-hex">${c.hex.toUpperCase()}</span>
+                        <span class="harmony-chip-hex hex-copy">${c.hex.toUpperCase()}</span>
                     </div>`;
                 }
                 html += `</div></div>`;
@@ -1715,15 +1750,21 @@
             harmoniesToggle.setAttribute('aria-expanded', String(isOpen));
         });
 
+        // Tap-to-copy on any .hex-copy element (delegated)
+        document.addEventListener('click', (e) => {
+            const el = e.target.closest('.hex-copy');
+            if (!el) return;
+            const hex = el.textContent.trim();
+            if (!hex) return;
+            navigator.clipboard.writeText(hex).then(() => {
+                el.classList.add('copied');
+                announce(`Copied ${hex}`);
+                setTimeout(() => el.classList.remove('copied'), 1200);
+            });
+        });
+
         // --- Result Card ---
         function showResult(sampledHex) {
-            // Show swatch with sampled color initially, will update to matched color
-            const sampledUpper = sampledHex.toUpperCase();
-            const textColor = getTextColor(sampledUpper);
-            resultSwatch.style.background = sampledUpper;
-            resultSwatch.style.color = textColor;
-            resultSwatchHex.textContent = sampledUpper;
-
             resultSaveRow.classList.remove('active');
             resultSaveInput.value = '';
             resultSaveBtn.disabled = false;
