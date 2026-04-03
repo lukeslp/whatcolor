@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="camera"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="Camera"
+        android:shortcutLongLabel="Open Camera">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://whatcoloristhis.one/?tab=camera" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="upload"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="Upload"
+        android:shortcutLongLabel="Upload Photo">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://whatcoloristhis.one/?tab=upload" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="random"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="Random"
+        android:shortcutLongLabel="Random Color">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="https://whatcoloristhis.one/?tab=random" />
+    </shortcut>
+</shortcuts>
