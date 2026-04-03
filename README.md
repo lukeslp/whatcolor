@@ -1,30 +1,29 @@
 # What Color Is This?
 
-Point your camera at anything and get its name. Three-tier color identification with CIEDE2000 perceptual matching against 30,000 named colors.
+I'm colorblind. This is the question everyone asks me when they find out.
 
-**[whatcoloristhis.one](https://whatcoloristhis.one)** | **[whatcoloristhat.one](https://whatcoloristhat.one)**
+So I built an app that answers it. Point your camera at anything — a dress, a paint swatch, a sunset — and get the color's name instantly. It matches against 30,000 named colors using CIEDE2000 perceptual distance, which means the results actually correspond to how humans see color, not just how computers store it.
 
-## How it works
+**[whatcoloristhis.one](https://whatcoloristhis.one)** · **[whatcoloristhat.one](https://whatcoloristhat.one)**
 
-1. Point your camera, drop an image, or paste a hex code
-2. The app samples the color and converts it through sRGB to CIELAB color space
-3. CIEDE2000 (the most perceptually accurate color distance formula) finds the closest matches from 30,000 named colors
+## What you get
 
-Results come back in three tiers:
+Every color is identified in three tiers:
 
-- **Family** -- base hue category (red, blue, teal, gray, etc.)
-- **Descriptor** -- qualified label ("light muted blue", "vivid orange", "very dark gray")
-- **Matches** -- the 5 closest named colors ranked by perceptual distance
+- **Family** — the broad category (red, blue, teal, gray)
+- **Descriptor** — a qualified label ("light muted blue", "vivid orange", "very dark gray")
+- **Named match** — the closest of 30,000 named colors, ranked by perceptual distance
 
 ## Features
 
-- Camera, image upload, and hex input
-- Color harmonies: complementary, analogous, triadic, split-complementary
-- Color vision deficiency simulation (protanopia, deuteranopia, tritanopia)
-- Colorblind-safe palette suggestions based on Wong (2011)
-- Save and browse a personal color history
-- Installable as a PWA on mobile and desktop
-- Pure Python CIELAB/CIEDE2000 implementation with no external dependencies for color math
+- **Camera sampling** with 7x7 pixel averaging and white balance calibration
+- **Image upload** — drop a photo, tap anywhere to sample
+- **Color matches** — complementary, analogous, triadic, split-complementary
+- **Accessible palettes** — colorblind-safe swatches (Wong 2011), high-contrast pairs, CVD simulation (protanopia, deuteranopia, tritanopia via Brettel 1997)
+- **Personal vision settings** — set your color vision type for personalized results
+- **Save and label** — build a personal color library with notes, exportable as JSON
+- **Random colors** — browse 30,000 named colors one at a time
+- **Installable PWA** — works offline, add to home screen on any device
 
 ## API
 
@@ -32,20 +31,17 @@ Results come back in three tiers:
 POST /api/match        {"hex": "#C93F38"}
 GET  /api/match/C93F38
 ```
-
 Returns family, descriptor, top 5 named matches with CIEDE2000 distance, and color harmonies.
 
 ```
-POST /api/accessible   {"hex": "#C93F38"}
+POST /api/accessible   {"hex": "#C93F38", "cvd_type": "deuteranopia"}
 ```
-
-Returns CVD simulations, universal-safe palette, and high-contrast pair suggestions.
+Returns CVD simulations, universal-safe palette, high-contrast pairs. Optional `cvd_type` personalizes the response.
 
 ```
 GET  /api/random
 ```
-
-Returns a random named color from the full database.
+Random named color with descriptor and family.
 
 ## Run locally
 
@@ -54,8 +50,17 @@ pip install flask flask-cors
 python api.py
 ```
 
-Opens on port 5010.
+Runs on port 5010. Needs the color database — symlink or copy `colornames.json` (29,956 named colors, each `{"name": "...", "hex": "#RRGGBB"}`).
+
+## Color math
+
+All color matching is pure Python with no external dependencies:
+
+- sRGB → linear RGB → XYZ (D65) → CIELAB
+- CIEDE2000 for perceptual distance (Sharma, Wu, Dalal 2005)
+- Brettel 1997 CVD simulation via LMS cone response matrices
+- HSL-based color family classification with lightness/saturation modifiers
 
 ## Author
 
-**Luke Steuber** -- [lukesteuber.com](https://lukesteuber.com)
+**Luke Steuber** — [lukesteuber.com](https://lukesteuber.com) · [Bluesky](https://bsky.app/profile/lukesteuber.com) · [datapoems.io](https://datapoems.io)

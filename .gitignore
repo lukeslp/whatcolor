@@ -1,2 +1,9 @@
 __pycache__/
+*.pyc
 colornames.json
+.claude/
+.aider.*
+.DS_Store
+*.local.md
+*.local.json
+.env
