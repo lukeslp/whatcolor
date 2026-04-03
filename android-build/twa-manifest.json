@@ -6,15 +6,19 @@
   "display": "standalone",
   "themeColor": "#1a1a1a",
   "navigationColor": "#1a1a1a",
+  "navigationColorDark": "#1a1a1a",
+  "navigationDividerColor": "#1a1a1a",
+  "navigationDividerColorDark": "#1a1a1a",
   "backgroundColor": "#1a1a1a",
   "enableNotifications": false,
   "startUrl": "/",
   "iconUrl": "https://whatcoloristhis.one/icon-512.png",
   "maskableIconUrl": "https://whatcoloristhis.one/icon-maskable-512.png",
+  "monochromeIconUrl": "",
   "shortcuts": [
-    {"name": "Camera", "url": "/?tab=camera", "icons": [{"src": "https://whatcoloristhis.one/icon-96.png"}]},
-    {"name": "Upload", "url": "/?tab=upload", "icons": [{"src": "https://whatcoloristhis.one/icon-96.png"}]},
-    {"name": "Random", "url": "/?tab=random", "icons": [{"src": "https://whatcoloristhis.one/icon-96.png"}]}
+    {"name": "Camera", "shortName": "Camera", "url": "/?tab=camera", "chosenIconUrl": "https://whatcoloristhis.one/icon-96.png"},
+    {"name": "Upload", "shortName": "Upload", "url": "/?tab=upload", "chosenIconUrl": "https://whatcoloristhis.one/icon-96.png"},
+    {"name": "Random", "shortName": "Random", "url": "/?tab=random", "chosenIconUrl": "https://whatcoloristhis.one/icon-96.png"}
   ],
   "signingKey": {
     "path": "./whatcolor-keystore.jks",
@@ -24,5 +28,27 @@
   "appVersionName": "1.0.0",
   "splashScreenFadeOutDuration": 300,
   "fallbackType": "customtabs",
-  "enableSiteSettingsShortcut": true
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://whatcoloristhis.one/",
+  "minSdkVersion": 19,
+  "orientation": "portrait",
+  "fingerprints": [
+    {
+      "name": "assetlinks",
+      "value": "B5:50:2E:75:D9:3C:2C:EB:C9:41:DD:C1:7E:27:BD:1E:1D:90:EF:0C:85:72:7E:F8:DB:34:A5:94:64:86:E6:79"
+    }
+  ],
+  "additionalTrustedOrigins": [
+    "https://whatcoloristhat.one",
+    "https://whatcolouristhat.com"
+  ],
+  "retainedBundles": [],
+  "playBilling": {
+    "enabled": false
+  },
+  "locationDelegation": {
+    "enabled": false
+  }
 }
