@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">What Color Is This?</string>
+    <string name="shortcut_camera_short">Camera</string>
+    <string name="shortcut_camera_long">Open Camera</string>
+    <string name="shortcut_upload_short">Upload</string>
+    <string name="shortcut_upload_long">Upload Photo</string>
+    <string name="shortcut_random_short">Random</string>
+    <string name="shortcut_random_long">Random Color</string>
 </resources>
