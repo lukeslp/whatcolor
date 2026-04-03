@@ -3,6 +3,7 @@
 import json
 import math
 import os
+import random
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 
@@ -436,6 +437,86 @@ def compute_harmonies(rgb):
 
 
 # ---------------------------------------------------------------------------
+# CVD simulation (Brettel 1997) — color vision deficiency
+# ---------------------------------------------------------------------------
+
+# RGB to LMS matrix (Hunt-Pointer-Estevez)
+RGB_TO_LMS = [
+    [0.31399022, 0.63951294, 0.04649755],
+    [0.15537241, 0.75789446, 0.08670142],
+    [0.01775239, 0.10944209, 0.87256922],
+]
+
+LMS_TO_RGB = [
+    [5.47221206, -4.64196010, 0.16963708],
+    [-1.12524190, 2.29317094, -0.16789520],
+    [0.02980165, -0.19318073, 1.16364789],
+]
+
+# CVD simulation matrices (full severity)
+PROTAN_SIM = [
+    [0.0, 1.05118294, -0.05116099],
+    [0.0, 1.0, 0.0],
+    [0.0, 0.0, 1.0],
+]
+
+DEUTAN_SIM = [
+    [1.0, 0.0, 0.0],
+    [0.9513092, 0.0, 0.04866992],
+    [0.0, 0.0, 1.0],
+]
+
+TRITAN_SIM = [
+    [1.0, 0.0, 0.0],
+    [0.0, 1.0, 0.0],
+    [-0.86744736, 1.86727089, 0.0],
+]
+
+# Wong (2011) colorblind-safe palette
+WONG_PALETTE = [
+    '#000000',  # black
+    '#E69F00',  # orange
+    '#56B4E9',  # sky blue
+    '#009E73',  # bluish green
+    '#F0E442',  # yellow
+    '#0072B2',  # blue
+    '#D55E00',  # vermillion
+    '#CC79A7',  # reddish purple
+]
+
+
+def matrix_multiply(mat, vec):
+    return [sum(m * v for m, v in zip(row, vec)) for row in mat]
+
+
+def linear_to_srgb(c):
+    """Inverse gamma: linear (0-1) to sRGB (0-255)."""
+    if c <= 0.0031308:
+        s = 12.92 * c
+    else:
+        s = 1.055 * (c ** (1.0 / 2.4)) - 0.055
+    return max(0, min(255, round(s * 255)))
+
+
+def simulate_cvd(rgb, cvd_matrix):
+    """Simulate color vision deficiency."""
+    r, g, b = rgb
+    lin = [rgb_to_linear(r), rgb_to_linear(g), rgb_to_linear(b)]
+    lms = matrix_multiply(RGB_TO_LMS, lin)
+    sim_lms = matrix_multiply(cvd_matrix, lms)
+    sim_lin = matrix_multiply(LMS_TO_RGB, sim_lms)
+    return (linear_to_srgb(sim_lin[0]), linear_to_srgb(sim_lin[1]), linear_to_srgb(sim_lin[2]))
+
+
+# ---------------------------------------------------------------------------
+# Shuffle-bag random color state
+# ---------------------------------------------------------------------------
+
+remaining_colors = []
+last_color = None
+
+
+# ---------------------------------------------------------------------------
 # Routes
 # ---------------------------------------------------------------------------
 
@@ -473,6 +554,127 @@ def match_get(hex_value):
         return jsonify({'error': 'Invalid hex color value'}), 400
 
     return jsonify(result)
+
+
+@app.route('/api/random')
+def random_color():
+    global remaining_colors, last_color
+    if not remaining_colors:
+        remaining_colors = COLOR_CACHE.copy()
+        random.shuffle(remaining_colors)
+        if last_color and len(remaining_colors) > 1 and remaining_colors[0] == last_color:
+            remaining_colors[0], remaining_colors[-1] = remaining_colors[-1], remaining_colors[0]
+    color = remaining_colors.pop()
+    last_color = color
+    hex_upper = color['hex'].upper()
+    classification = classify_color(*color['rgb'])
+    return jsonify({
+        'color': hex_upper,
+        'name': color['name'],
+        'rgb': list(color['rgb']),
+        'family': classification['family'],
+        'descriptor': classification['descriptor']
+    })
+
+
+@app.route('/api/accessible', methods=['POST'])
+def accessible():
+    data = request.get_json(silent=True)
+    if not data or 'hex' not in data:
+        return jsonify({'error': 'Missing "hex" field'}), 400
+
+    hex_str = data['hex'].strip().lstrip('#')
+    if len(hex_str) != 6:
+        return jsonify({'error': 'Invalid hex color value'}), 400
+    try:
+        int(hex_str, 16)
+    except ValueError:
+        return jsonify({'error': 'Invalid hex color value'}), 400
+
+    hex_str = f"#{hex_str.upper()}"
+    input_rgb = hex_to_rgb(hex_str)
+    input_lab = hex_to_lab(hex_str)
+
+    # --- CVD simulations ---
+    simulations = {}
+    for name, mat in [('protanopia', PROTAN_SIM), ('deuteranopia', DEUTAN_SIM), ('tritanopia', TRITAN_SIM)]:
+        sim_rgb = simulate_cvd(input_rgb, mat)
+        sim_hex = rgb_to_hex(*sim_rgb).upper()
+        sim_class = classify_color(*sim_rgb)
+        simulations[name] = {
+            'hex': sim_hex,
+            'descriptor': sim_class['descriptor'],
+        }
+
+    # --- Wong palette distances ---
+    wong_labs = []
+    for w_hex in WONG_PALETTE:
+        w_lab = hex_to_lab(w_hex)
+        w_rgb = hex_to_rgb(w_hex)
+        w_class = classify_color(*w_rgb)
+        d = delta_e_ciede2000(input_lab, w_lab)
+        wong_labs.append({
+            'hex': w_hex.upper(),
+            'lab': w_lab,
+            'descriptor': w_class['descriptor'],
+            'distance': d,
+        })
+
+    # --- Find closest Wong color and replace with input ---
+    closest_idx = min(range(len(wong_labs)), key=lambda i: wong_labs[i]['distance'])
+    input_class = classify_color(*input_rgb)
+    palette = list(wong_labs)
+    palette[closest_idx] = {
+        'hex': hex_str,
+        'lab': input_lab,
+        'descriptor': input_class['descriptor'],
+        'distance': 0.0,
+    }
+
+    # --- Select 5 most spread colors (greedy farthest-point) ---
+    selected = [closest_idx]
+    remaining = set(range(len(palette)))
+    remaining.discard(closest_idx)
+    while len(selected) < 5 and remaining:
+        best_idx = None
+        best_min_dist = -1
+        for idx in remaining:
+            min_dist = min(
+                delta_e_ciede2000(palette[idx]['lab'], palette[s]['lab'])
+                for s in selected
+            )
+            if min_dist > best_min_dist:
+                best_min_dist = min_dist
+                best_idx = idx
+        selected.append(best_idx)
+        remaining.discard(best_idx)
+
+    universal_safe = []
+    for i, idx in enumerate(selected):
+        p = palette[idx]
+        role = 'your color' if idx == closest_idx else 'safe pair'
+        universal_safe.append({
+            'hex': p['hex'],
+            'descriptor': p['descriptor'],
+            'role': role,
+        })
+
+    # --- High contrast pairs (2 Wong colors most distant from input) ---
+    wong_by_dist = sorted(wong_labs, key=lambda w: w['distance'], reverse=True)
+    high_contrast = []
+    for w in wong_by_dist[:2]:
+        high_contrast.append({
+            'hex': w['hex'],
+            'descriptor': w['descriptor'],
+            'delta_e': round(w['distance'], 1),
+        })
+
+    return jsonify({
+        'input': hex_str,
+        'universal_safe': universal_safe,
+        'high_contrast': high_contrast,
+        'simulations': simulations,
+    })
 
 
 if __name__ == '__main__':

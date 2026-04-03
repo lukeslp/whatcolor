@@ -102,20 +102,20 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
+            gap: 3px;
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             font-weight: 500;
             cursor: pointer;
-            padding: 8px 4px;
+            padding: 8px 2px;
             transition: color var(--transition);
             min-height: 44px;
             letter-spacing: 0.03em;
             text-transform: uppercase;
         }
-        .tab-btn svg { width: 22px; height: 22px; transition: color var(--transition); }
+        .tab-btn svg { width: 20px; height: 20px; transition: color var(--transition); }
         .tab-btn.active { color: var(--accent); }
         .tab-btn:focus-visible {
             outline: 2px solid var(--accent);
@@ -502,7 +502,7 @@
         .saved-empty h3 { font-size: 1.1rem; font-weight: 500; }
         .saved-empty p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
 
-        /* --- Swatch Detail Modal --- */
+        /* --- Swatch Detail Modal (Saved tab) --- */
         .swatch-detail-overlay {
             position: fixed;
             inset: 0;
@@ -533,11 +533,11 @@
             padding: 20px;
             gap: 4px;
         }
-        .swatch-detail-color .detail-name {
+        .swatch-detail-color .swatch-detail-name {
             font-size: 1.3rem;
             font-weight: 700;
         }
-        .swatch-detail-color .detail-family {
+        .swatch-detail-color .swatch-detail-family {
             font-size: 0.9rem;
             font-weight: 500;
             text-transform: capitalize;
@@ -588,7 +588,58 @@
         }
         .btn-danger:hover { background: rgba(224, 85, 85, 0.25); }
 
-        /* --- Result Card --- */
+        /* --- Random Tab --- */
+        #random-panel { background: var(--bg); }
+        .random-display {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            text-align: center;
+        }
+        .random-descriptor {
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: capitalize;
+            margin-bottom: 8px;
+        }
+        .random-name {
+            font-size: 1.1rem;
+            opacity: 0.7;
+            margin-bottom: 12px;
+        }
+        .random-hex {
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            opacity: 0.6;
+            cursor: pointer;
+        }
+        .random-controls {
+            padding: 20px;
+            padding-bottom: calc(20px + var(--tab-height) + var(--safe-bottom));
+            display: flex;
+            justify-content: center;
+        }
+        .random-btn {
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 2px solid;
+            background: transparent;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            min-height: 48px;
+        }
+        .random-btn:hover { opacity: 0.8; transform: scale(1.02); }
+        .random-btn:active { transform: scale(0.97); }
+
+        /* --- Result Card (Hero) --- */
         .result-overlay {
             position: fixed;
             inset: 0;
@@ -621,15 +672,8 @@
         .result-card-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px 0;
-        }
-        .result-card-header h3 {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            justify-content: flex-end;
+            padding: 12px 16px 0;
         }
         .result-close {
             width: 36px;
@@ -650,74 +694,52 @@
         .result-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         .result-close svg { width: 18px; height: 18px; }
 
-        /* --- Result Funnel: family → descriptor → specific name --- */
-        .result-funnel {
-            padding: 16px 20px 12px;
+        /* Hero swatch */
+        .result-hero {
+            margin: 16px 20px;
+            border-radius: 16px;
+            height: 120px;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 0;
+            justify-content: center;
+            transition: background 0.3s ease;
         }
-        .funnel-tier {
-            text-align: center;
-            position: relative;
-            width: 100%;
-        }
-        .funnel-tier + .funnel-tier::before {
-            content: '';
-            display: block;
-            width: 1px;
-            height: 10px;
-            background: var(--border);
-            margin: 0 auto 0;
-        }
-        .funnel-family {
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--text-muted);
-            padding: 6px 16px;
-            background: var(--surface-raised);
-            border-radius: 20px;
-            display: inline-block;
-        }
-        .funnel-descriptor {
-            font-size: 1.4rem;
+        .result-hero-descriptor {
+            font-size: 1.6rem;
             font-weight: 700;
             text-transform: capitalize;
             letter-spacing: -0.01em;
-            padding: 4px 0;
         }
-        .funnel-name {
-            padding: 10px 20px;
-            border-radius: var(--radius);
-            display: inline-flex;
+
+        /* Feature buttons */
+        .result-features {
+            display: flex;
+            gap: 8px;
+            padding: 0 20px 16px;
+        }
+        .feature-btn {
+            flex: 1;
+            display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            min-width: 200px;
-        }
-        .funnel-name-text {
-            font-size: 1.05rem;
-            font-weight: 600;
-        }
-        .funnel-name-hex {
-            font-size: 0.8rem;
-            font-family: 'Courier New', monospace;
-            font-weight: 500;
-            opacity: 0.8;
-            cursor: pointer;
-        }
-        .funnel-name-hex:active { opacity: 1; }
-
-        .result-values {
-            font-size: 0.75rem;
-            font-family: 'Courier New', monospace;
+            padding: 12px 8px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--surface-raised);
             color: var(--text-muted);
-            text-align: center;
-            padding: 4px 20px 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            min-height: 44px;
         }
+        .feature-btn:hover { color: var(--text); border-color: var(--text-muted); }
+        .feature-btn:active { transform: scale(0.96); }
+        .feature-btn svg { width: 20px; height: 20px; }
 
         /* Tap-to-copy hex anywhere */
         .hex-copy {
@@ -747,88 +769,7 @@
             transform: translateX(-50%) scale(1);
         }
 
-        /* --- Color Harmonies --- */
-        .result-harmonies {
-            padding: 0 20px 4px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1), padding 0.35s ease;
-        }
-        .result-harmonies.open {
-            max-height: 500px;
-            padding: 8px 20px 4px;
-        }
-        .harmonies-section {
-            padding: 0 20px;
-        }
-        .harmonies-toggle {
-            width: 100%;
-            background: transparent;
-            border: none;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            padding: 14px 0;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: color var(--transition);
-            font-family: inherit;
-        }
-        .harmonies-toggle:hover { color: var(--text); }
-        .harmonies-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
-        .harmonies-toggle svg {
-            width: 14px; height: 14px;
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .harmonies-toggle.open svg { transform: rotate(180deg); }
-        .harmonies-toggle.open { color: var(--text); }
-        .harmony-group {
-            margin-bottom: 14px;
-        }
-        .harmony-group:last-child { margin-bottom: 6px; }
-        .harmony-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-        .harmony-swatches {
-            display: flex;
-            gap: 6px;
-        }
-        .harmony-chip {
-            flex: 1;
-            border-radius: var(--radius-sm);
-            padding: 8px 6px;
-            text-align: center;
-            min-height: 48px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-        }
-        .harmony-chip-desc {
-            font-size: 0.6rem;
-            font-weight: 500;
-            text-transform: capitalize;
-            opacity: 0.85;
-        }
-        .harmony-chip-hex {
-            font-size: 0.65rem;
-            font-family: 'Courier New', monospace;
-            font-weight: 600;
-            opacity: 0.9;
-        }
-
+        /* Result actions (save/retry) */
         .result-actions {
             padding: 16px 20px;
             padding-bottom: calc(20px + var(--safe-bottom));
@@ -880,6 +821,267 @@
         .btn-secondary:hover { background: var(--border); }
         .btn-confirm { background: var(--success); color: #fff; }
         .btn-confirm:hover { background: #48a06a; }
+
+        /* --- Shared Modal Pattern --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .modal {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 210;
+            background: var(--bg);
+            border-radius: 16px 16px 0 0;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            padding-bottom: calc(20px + var(--safe-bottom));
+        }
+        .modal.open { transform: translateY(0); }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            background: var(--bg);
+            z-index: 1;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        .modal-close {
+            width: 36px; height: 36px;
+            min-width: 44px; min-height: 44px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close svg { width: 18px; height: 18px; }
+        .modal-body { padding: 16px 20px; }
+
+        /* --- Details Modal --- */
+        .detail-tiers { padding: 8px 0 20px; }
+        .detail-tier {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 0;
+        }
+        .detail-tier-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--accent);
+            flex-shrink: 0;
+        }
+        .detail-tier-line {
+            width: 1px; height: 16px;
+            background: var(--border);
+            margin-left: 4.5px;
+        }
+        .detail-tier-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            background: var(--surface);
+            padding: 4px 12px;
+            border-radius: 12px;
+        }
+        .detail-tier-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+        .detail-name-swatch {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .detail-values {
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .detail-key {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+        .detail-val {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* --- Harmonies Modal --- */
+        .harmony-group { margin-bottom: 20px; }
+        .harmony-group:last-child { margin-bottom: 0; }
+        .harmony-group-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+        .harmony-group-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+        .harmony-chips { display: flex; gap: 8px; }
+        .harmony-chip {
+            flex: 1;
+            border-radius: 12px;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-height: 64px;
+            justify-content: center;
+        }
+        .harmony-chip-name {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: capitalize;
+            opacity: 0.85;
+        }
+        .harmony-chip-hex {
+            font-size: 0.75rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* --- Accessible Modal --- */
+        .a11y-section { margin-bottom: 24px; }
+        .a11y-section:last-child { margin-bottom: 0; }
+        .a11y-section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+        }
+        .a11y-section-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.7;
+            margin-bottom: 12px;
+        }
+        .a11y-palette {
+            display: flex;
+            gap: 6px;
+        }
+        .a11y-chip {
+            flex: 1;
+            border-radius: 10px;
+            padding: 10px 6px;
+            text-align: center;
+            min-height: 64px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            position: relative;
+        }
+        .a11y-chip-desc {
+            font-size: 0.55rem;
+            font-weight: 500;
+            text-transform: capitalize;
+            opacity: 0.85;
+        }
+        .a11y-chip-hex {
+            font-size: 0.6rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .a11y-chip-badge {
+            position: absolute;
+            top: -6px;
+            right: -4px;
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: var(--accent);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .a11y-simulations {
+            display: flex;
+            gap: 8px;
+        }
+        .a11y-sim {
+            flex: 1;
+            text-align: center;
+        }
+        .a11y-sim-swatch {
+            height: 48px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+        .a11y-sim-type {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+        }
+        .a11y-sim-desc {
+            font-size: 0.75rem;
+            text-transform: capitalize;
+            margin: 2px 0;
+        }
+        .a11y-sim-hex {
+            font-size: 0.65rem;
+            font-family: 'Courier New', monospace;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .a11y-loading {
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
 
         /* --- Loading Spinner --- */
         .spinner {
@@ -1140,12 +1342,24 @@
         </div>
     </div>
 
-    <!-- ========== SWATCH DETAIL MODAL ========== -->
+    <!-- ========== RANDOM TAB ========== -->
+    <div class="tab-panel" id="random-panel" role="tabpanel" aria-labelledby="tab-random">
+        <div class="random-display" id="random-display">
+            <div class="random-descriptor" id="random-descriptor">Press the button</div>
+            <div class="random-name" id="random-name"></div>
+            <div class="random-hex hex-copy" id="random-hex"></div>
+        </div>
+        <div class="random-controls">
+            <button class="random-btn" id="random-btn" aria-label="Get a new random color">New Color</button>
+        </div>
+    </div>
+
+    <!-- ========== SWATCH DETAIL MODAL (Saved tab) ========== -->
     <div class="swatch-detail-overlay" id="swatch-detail-overlay" role="dialog" aria-modal="true" aria-label="Color detail">
         <div class="swatch-detail" id="swatch-detail">
             <div class="swatch-detail-color" id="swatch-detail-color">
-                <div class="detail-name" id="detail-name"></div>
-                <div class="detail-family" id="detail-family"></div>
+                <div class="swatch-detail-name" id="swatch-detail-name"></div>
+                <div class="swatch-detail-family" id="swatch-detail-family"></div>
             </div>
             <div class="swatch-detail-body">
                 <div class="detail-label-row">
@@ -1172,40 +1386,54 @@
         </div>
     </div>
 
-    <!-- ========== RESULT CARD ========== -->
+    <!-- ========== RESULT CARD (Hero) ========== -->
     <div class="result-overlay" id="result-overlay"></div>
     <div class="result-card" id="result-card" role="dialog" aria-modal="true" aria-label="Color identification result">
         <div class="result-card-header">
-            <h3>Color Match</h3>
             <button class="result-close" id="result-close" aria-label="Close result">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
             </button>
         </div>
-        <div class="result-funnel" id="result-funnel">
-            <div class="funnel-tier">
-                <span class="funnel-family" id="result-family"></span>
-            </div>
-            <div class="funnel-tier">
-                <div class="funnel-descriptor" id="result-descriptor"></div>
-            </div>
-            <div class="funnel-tier">
-                <div class="funnel-name" id="result-name-block">
-                    <span class="funnel-name-text" id="result-name"></span>
-                    <span class="funnel-name-hex hex-copy" id="result-hex" aria-label="Tap to copy hex code"></span>
-                </div>
-            </div>
+
+        <!-- Hero swatch -->
+        <div class="result-hero" id="result-hero">
+            <div class="result-hero-descriptor" id="result-hero-descriptor"></div>
+        </div>
+        <div style="display:flex;justify-content:center;padding:0 20px 8px;">
             <div class="spinner" id="result-spinner" aria-label="Identifying color..."></div>
         </div>
-        <div class="result-values" id="result-values"></div>
-        <div class="harmonies-section">
-            <button class="harmonies-toggle" id="harmonies-toggle" aria-expanded="false" aria-controls="harmonies-panel">
+
+        <!-- Feature buttons -->
+        <div class="result-features">
+            <button class="feature-btn" id="btn-details" aria-label="View color details">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                Details
+            </button>
+            <button class="feature-btn" id="btn-harmonies" aria-label="View color harmonies">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="13.5" cy="6.5" r="2.5"/>
+                    <circle cx="17.5" cy="15.5" r="2.5"/>
+                    <circle cx="8.5" cy="15.5" r="2.5"/>
+                    <circle cx="13" cy="13" r="8"/>
+                </svg>
                 Harmonies
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button class="feature-btn" id="btn-accessible" aria-label="View accessible palettes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+                Accessible
             </button>
         </div>
-        <div class="result-harmonies" id="harmonies-panel" role="region" aria-label="Color harmonies"></div>
+
+        <!-- Save/retry -->
         <div class="result-actions">
             <div class="result-save-row" id="result-save-row">
                 <label for="result-save-input" class="sr-only">Label for this color</label>
@@ -1227,6 +1455,78 @@
                 </button>
                 <button class="btn btn-secondary" id="result-retry-btn" aria-label="Try again">Try Again</button>
             </div>
+        </div>
+    </div>
+
+    <!-- ========== DETAILS MODAL ========== -->
+    <div class="modal-overlay" id="details-overlay"></div>
+    <div class="modal" id="details-modal" role="dialog" aria-modal="true" aria-label="Color details">
+        <div class="modal-header">
+            <h3>Details</h3>
+            <button class="modal-close" id="details-close" aria-label="Close details">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="detail-tiers">
+                <div class="detail-tier">
+                    <span class="detail-tier-dot"></span>
+                    <span class="detail-tier-label" id="detail-modal-family"></span>
+                </div>
+                <div class="detail-tier-line"></div>
+                <div class="detail-tier">
+                    <span class="detail-tier-dot"></span>
+                    <span class="detail-tier-text" id="detail-modal-descriptor"></span>
+                </div>
+                <div class="detail-tier-line"></div>
+                <div class="detail-tier">
+                    <span class="detail-tier-dot"></span>
+                    <div class="detail-name-swatch" id="detail-modal-name-swatch">
+                        <span id="detail-modal-name"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-values">
+                <div class="detail-row">
+                    <span class="detail-key">Hex</span>
+                    <span class="detail-val hex-copy" id="detail-modal-hex"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-key">RGB</span>
+                    <span class="detail-val" id="detail-modal-rgb"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-key">HSL</span>
+                    <span class="detail-val" id="detail-modal-hsl"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== HARMONIES MODAL ========== -->
+    <div class="modal-overlay" id="harmonies-overlay"></div>
+    <div class="modal" id="harmonies-modal" role="dialog" aria-modal="true" aria-label="Color harmonies">
+        <div class="modal-header">
+            <h3>Harmonies</h3>
+            <button class="modal-close" id="harmonies-close" aria-label="Close harmonies">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body" id="harmonies-body"></div>
+    </div>
+
+    <!-- ========== ACCESSIBLE MODAL ========== -->
+    <div class="modal-overlay" id="a11y-overlay"></div>
+    <div class="modal" id="a11y-modal" role="dialog" aria-modal="true" aria-label="Accessible palettes">
+        <div class="modal-header">
+            <h3>Accessible Palettes</h3>
+            <button class="modal-close" id="a11y-close" aria-label="Close accessible palettes">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body" id="a11y-body">
+            <div class="a11y-loading"><div class="spinner active"></div></div>
         </div>
     </div>
 
@@ -1254,6 +1554,13 @@
                 <polyline points="7 3 7 8 15 8"/>
             </svg>
             Saved
+        </button>
+        <button class="tab-btn" id="tab-random" role="tab" aria-selected="false" aria-controls="random-panel" tabindex="-1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="1" y="3" width="22" height="18" rx="2" ry="2"/>
+                <line x1="1" y1="9" x2="23" y2="9"/>
+            </svg>
+            Random
         </button>
     </nav>
 
@@ -1300,11 +1607,11 @@
         const importBtn = $('#import-btn');
         const importInput = $('#import-input');
 
-        // Swatch detail
+        // Swatch detail (saved tab)
         const swatchDetailOverlay = $('#swatch-detail-overlay');
         const swatchDetailColor = $('#swatch-detail-color');
-        const detailName = $('#detail-name');
-        const detailFamily = $('#detail-family');
+        const swatchDetailName = $('#swatch-detail-name');
+        const swatchDetailFamily = $('#swatch-detail-family');
         const detailLabelInput = $('#detail-label-input');
         const detailSaveLabel = $('#detail-save-label');
         const detailSampledHex = $('#detail-sampled-hex');
@@ -1313,25 +1620,25 @@
         const detailDelete = $('#detail-delete');
         const detailClose = $('#detail-close');
 
-        // Result card
+        // Result card (hero)
         const resultOverlay = $('#result-overlay');
         const resultCard = $('#result-card');
         const resultClose = $('#result-close');
-        const resultNameBlock = $('#result-name-block');
-        const resultHex = $('#result-hex');
-        const resultDescriptor = $('#result-descriptor');
-        const resultFamily = $('#result-family');
-        const resultName = $('#result-name');
-        // resultQuality removed — quality badges removed from UI
-        const resultValues = $('#result-values');
+        const resultHero = $('#result-hero');
+        const resultHeroDescriptor = $('#result-hero-descriptor');
         const resultSpinner = $('#result-spinner');
-        const harmoniesToggle = $('#harmonies-toggle');
-        const harmoniesPanel = $('#harmonies-panel');
         const resultSaveBtn = $('#result-save-btn');
         const resultSaveRow = $('#result-save-row');
         const resultSaveInput = $('#result-save-input');
         const resultSaveConfirm = $('#result-save-confirm');
         const resultRetryBtn = $('#result-retry-btn');
+
+        // Random tab
+        const randomDisplay = $('#random-display');
+        const randomDescriptor = $('#random-descriptor');
+        const randomName = $('#random-name');
+        const randomHex = $('#random-hex');
+        const randomBtn = $('#random-btn');
 
         // Tabs
         const tabBtns = $$('.tab-btn');
@@ -1343,6 +1650,7 @@
         let torchOn = false;
         let torchSupported = false;
         let currentResult = null;
+        let currentApiData = null;
         let currentDetailId = null;
         let uploadImage = null;
 
@@ -1377,6 +1685,24 @@
             return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
         }
 
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
+                }
+            }
+            return `${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%`;
+        }
+
         function formatDate(iso) {
             try {
                 const d = new Date(iso);
@@ -1384,9 +1710,20 @@
             } catch { return iso; }
         }
 
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
         // --- Tab Navigation ---
         function switchTab(tabId) {
-            const panels = { 'tab-camera': 'camera-panel', 'tab-upload': 'upload-panel', 'tab-saved': 'saved-panel' };
+            const panels = {
+                'tab-camera': 'camera-panel',
+                'tab-upload': 'upload-panel',
+                'tab-saved': 'saved-panel',
+                'tab-random': 'random-panel'
+            };
             tabBtns.forEach(btn => {
                 const isActive = btn.id === tabId;
                 btn.classList.toggle('active', isActive);
@@ -1655,17 +1992,9 @@
         async function identifyColor(hex) {
             showResult(hex);
             resultSpinner.classList.add('active');
-            resultDescriptor.textContent = '';
-            resultFamily.textContent = '';
-            resultName.textContent = '';
-            resultHex.textContent = '';
-            resultValues.textContent = '';
-            resultNameBlock.style.background = '';
-            resultNameBlock.style.color = '';
-            harmoniesPanel.classList.remove('open');
-            harmoniesPanel.innerHTML = '';
-            harmoniesToggle.classList.remove('open');
-            harmoniesToggle.setAttribute('aria-expanded', 'false');
+            resultHeroDescriptor.textContent = '';
+            resultHero.style.background = '';
+            resultHero.style.color = '';
 
             try {
                 const resp = await fetch(API + '/match', {
@@ -1679,75 +2008,196 @@
                 if (!match) throw new Error('No match found');
 
                 const matchedHex = match.hex.toUpperCase();
-                const matchedTextColor = getTextColor(matchedHex);
-                const descriptor = data.descriptor || '';
-                const family = data.family || '';
-                const name = match.name || '';
-                const rgb = match.rgb || [];
+                const tc = getTextColor(matchedHex);
 
-                // Funnel: family → descriptor → name+swatch
-                resultFamily.textContent = family;
-                resultDescriptor.textContent = descriptor;
-                resultName.textContent = name;
-                resultHex.textContent = matchedHex;
-                resultNameBlock.style.background = matchedHex;
-                resultNameBlock.style.color = matchedTextColor;
-                resultValues.textContent = `rgb(${rgb.join(', ')})`;
+                resultHero.style.background = matchedHex;
+                resultHero.style.color = tc;
+                resultHeroDescriptor.textContent = data.descriptor;
 
-                // Build harmonies
-                if (data.harmonies) {
-                    buildHarmonies(data.harmonies);
-                }
-
+                currentApiData = data;
                 currentResult = {
                     sampledHex: hex.toUpperCase(),
-                    matchedName: name,
+                    matchedName: match.name,
                     matchedHex: matchedHex,
-                    family: family,
-                    descriptor: descriptor,
-                    rgb: rgb
+                    family: data.family,
+                    descriptor: data.descriptor,
+                    rgb: match.rgb
                 };
 
-                announce(`Color identified: ${descriptor}. Closest name: ${name}. Hex ${matchedHex}.`);
+                announce(`Color identified: ${data.descriptor}. ${match.name}.`);
             } catch (err) {
-                resultDescriptor.textContent = 'Error';
-                resultName.textContent = err.message || 'Could not identify color';
-                resultValues.textContent = '';
+                resultHeroDescriptor.textContent = 'Error';
                 currentResult = null;
+                currentApiData = null;
                 announce('Could not identify color. Please try again.');
             } finally {
                 resultSpinner.classList.remove('active');
             }
         }
 
-        function buildHarmonies(harmonies) {
-            const labels = {
-                complementary: 'Complementary — opposite, high contrast',
-                analogous: 'Analogous — neighbors, harmonious',
-                triadic: 'Triadic — balanced, vibrant',
-                split_complementary: 'Split Complementary — contrast with variety'
+        // --- Modal open/close ---
+        function openModal(overlayId, modalId) {
+            document.getElementById(overlayId).classList.add('open');
+            requestAnimationFrame(() => document.getElementById(modalId).classList.add('open'));
+        }
+        function closeModal(overlayId, modalId) {
+            document.getElementById(modalId).classList.remove('open');
+            document.getElementById(overlayId).classList.remove('open');
+        }
+
+        // Details modal
+        document.getElementById('btn-details').addEventListener('click', () => {
+            if (!currentResult || !currentApiData) return;
+            const match = currentApiData.matches[0];
+            const hex = match.hex.toUpperCase();
+            const tc = getTextColor(hex);
+            const rgb = match.rgb || [];
+
+            document.getElementById('detail-modal-family').textContent = currentApiData.family;
+            document.getElementById('detail-modal-descriptor').textContent = currentApiData.descriptor;
+            document.getElementById('detail-modal-name').textContent = match.name;
+
+            const ns = document.getElementById('detail-modal-name-swatch');
+            ns.style.background = hex;
+            ns.style.color = tc;
+
+            document.getElementById('detail-modal-hex').textContent = hex;
+            document.getElementById('detail-modal-rgb').textContent = rgb.join(', ');
+            document.getElementById('detail-modal-hsl').textContent = rgb.length >= 3 ? rgbToHsl(rgb[0], rgb[1], rgb[2]) : '';
+
+            openModal('details-overlay', 'details-modal');
+        });
+
+        document.getElementById('details-close').addEventListener('click', () => {
+            closeModal('details-overlay', 'details-modal');
+        });
+        document.getElementById('details-overlay').addEventListener('click', () => {
+            closeModal('details-overlay', 'details-modal');
+        });
+
+        // Harmonies modal
+        document.getElementById('btn-harmonies').addEventListener('click', () => {
+            if (!currentApiData || !currentApiData.harmonies) return;
+            buildHarmoniesModal(currentApiData.harmonies);
+            openModal('harmonies-overlay', 'harmonies-modal');
+        });
+
+        function buildHarmoniesModal(harmonies) {
+            const descs = {
+                complementary: { label: 'Complementary', desc: 'Opposite on the color wheel' },
+                analogous: { label: 'Analogous', desc: 'Neighbors \u2014 naturally harmonious' },
+                triadic: { label: 'Triadic', desc: 'Three evenly spaced \u2014 balanced and vibrant' },
+                split_complementary: { label: 'Split Complementary', desc: 'Contrast with more variety' }
             };
             let html = '';
             for (const [type, colors] of Object.entries(harmonies)) {
+                const info = descs[type] || { label: type, desc: '' };
                 html += `<div class="harmony-group">
-                    <div class="harmony-label">${labels[type] || type}</div>
-                    <div class="harmony-swatches">`;
+                    <div class="harmony-group-label">${escapeHtml(info.label)}</div>
+                    <div class="harmony-group-desc">${escapeHtml(info.desc)}</div>
+                    <div class="harmony-chips">`;
                 for (const c of colors) {
                     const tc = getTextColor(c.hex);
                     html += `<div class="harmony-chip" style="background:${c.hex};color:${tc}">
-                        <span class="harmony-chip-desc">${c.descriptor}</span>
+                        <span class="harmony-chip-name">${escapeHtml(c.descriptor || c.name || '')}</span>
                         <span class="harmony-chip-hex hex-copy">${c.hex.toUpperCase()}</span>
                     </div>`;
                 }
                 html += `</div></div>`;
             }
-            harmoniesPanel.innerHTML = html;
+            document.getElementById('harmonies-body').innerHTML = html;
         }
 
-        harmoniesToggle.addEventListener('click', () => {
-            const isOpen = harmoniesPanel.classList.toggle('open');
-            harmoniesToggle.classList.toggle('open', isOpen);
-            harmoniesToggle.setAttribute('aria-expanded', String(isOpen));
+        document.getElementById('harmonies-close').addEventListener('click', () => {
+            closeModal('harmonies-overlay', 'harmonies-modal');
+        });
+        document.getElementById('harmonies-overlay').addEventListener('click', () => {
+            closeModal('harmonies-overlay', 'harmonies-modal');
+        });
+
+        // Accessible modal
+        document.getElementById('btn-accessible').addEventListener('click', async () => {
+            if (!currentResult) return;
+            const body = document.getElementById('a11y-body');
+            body.innerHTML = '<div class="a11y-loading"><div class="spinner active"></div></div>';
+            openModal('a11y-overlay', 'a11y-modal');
+
+            try {
+                const resp = await fetch(API + '/accessible', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hex: currentResult.matchedHex })
+                });
+                if (!resp.ok) throw new Error('API error');
+                const data = await resp.json();
+                renderAccessible(body, data);
+            } catch (e) {
+                body.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:40px">Could not load accessible palettes.</p>';
+            }
+        });
+
+        function renderAccessible(container, data) {
+            let html = '';
+
+            // Section 1: Universal Safe
+            if (data.universal_safe && data.universal_safe.length) {
+                html += `<div class="a11y-section">
+                    <div class="a11y-section-label">Universal Safe</div>
+                    <div class="a11y-section-desc">Distinguishable across all common types of color vision differences</div>
+                    <div class="a11y-palette">`;
+                for (const c of data.universal_safe) {
+                    const tc = getTextColor(c.hex);
+                    const badge = c.is_input ? '<span class="a11y-chip-badge">yours</span>' : '';
+                    html += `<div class="a11y-chip" style="background:${c.hex};color:${tc}">
+                        <span class="a11y-chip-desc">${escapeHtml(c.descriptor || c.name || '')}</span>
+                        <span class="a11y-chip-hex hex-copy">${c.hex.toUpperCase()}</span>
+                        ${badge}
+                    </div>`;
+                }
+                html += `</div></div>`;
+            }
+
+            // Section 2: High Contrast Pairs
+            if (data.high_contrast && data.high_contrast.length) {
+                html += `<div class="a11y-section">
+                    <div class="a11y-section-label">High Contrast</div>
+                    <div class="a11y-section-desc">Maximum visual distinction from your color</div>
+                    <div class="a11y-palette">`;
+                for (const c of data.high_contrast) {
+                    const tc = getTextColor(c.hex);
+                    html += `<div class="a11y-chip" style="background:${c.hex};color:${tc}">
+                        <span class="a11y-chip-desc">${escapeHtml(c.descriptor || c.name || '')}</span>
+                        <span class="a11y-chip-hex hex-copy">${c.hex.toUpperCase()}</span>
+                    </div>`;
+                }
+                html += `</div></div>`;
+            }
+
+            // Section 3: CVD Simulation
+            if (data.simulations && data.simulations.length) {
+                html += `<div class="a11y-section">
+                    <div class="a11y-section-label">Color Vision Simulation</div>
+                    <div class="a11y-section-desc">How this color appears under different types of color vision</div>
+                    <div class="a11y-simulations">`;
+                for (const sim of data.simulations) {
+                    html += `<div class="a11y-sim">
+                        <div class="a11y-sim-swatch" style="background:${sim.hex}"></div>
+                        <div class="a11y-sim-type">${escapeHtml(sim.type || '')}</div>
+                        <div class="a11y-sim-desc">${escapeHtml(sim.descriptor || sim.name || '')}</div>
+                        <div class="a11y-sim-hex hex-copy">${sim.hex.toUpperCase()}</div>
+                    </div>`;
+                }
+                html += `</div></div>`;
+            }
+
+            container.innerHTML = html || '<p style="color:var(--text-muted);text-align:center;padding:40px">No accessible palette data available.</p>';
+        }
+
+        document.getElementById('a11y-close').addEventListener('click', () => {
+            closeModal('a11y-overlay', 'a11y-modal');
+        });
+        document.getElementById('a11y-overlay').addEventListener('click', () => {
+            closeModal('a11y-overlay', 'a11y-modal');
         });
 
         // Tap-to-copy on any .hex-copy element (delegated)
@@ -1778,6 +2228,7 @@
             `;
 
             currentResult = null;
+            currentApiData = null;
             resultOverlay.classList.add('open');
             requestAnimationFrame(() => {
                 resultCard.classList.add('open');
@@ -1789,20 +2240,38 @@
             resultCard.classList.remove('open');
             resultOverlay.classList.remove('open');
             currentResult = null;
+            currentApiData = null;
         }
 
         resultClose.addEventListener('click', hideResult);
         resultOverlay.addEventListener('click', hideResult);
         resultRetryBtn.addEventListener('click', hideResult);
 
-        // Escape key closes result card and detail modal
+        // Escape key closes modals in order
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (swatchDetailOverlay.classList.contains('open')) {
+                // Close modals from top to bottom
+                if (document.getElementById('details-modal').classList.contains('open')) {
+                    closeModal('details-overlay', 'details-modal');
+                } else if (document.getElementById('harmonies-modal').classList.contains('open')) {
+                    closeModal('harmonies-overlay', 'harmonies-modal');
+                } else if (document.getElementById('a11y-modal').classList.contains('open')) {
+                    closeModal('a11y-overlay', 'a11y-modal');
+                } else if (swatchDetailOverlay.classList.contains('open')) {
                     closeSwatchDetail();
                 } else if (resultCard.classList.contains('open')) {
                     hideResult();
                 }
+            }
+        });
+
+        // Space bar for new color when random tab is active
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' && document.getElementById('random-panel').classList.contains('active')) {
+                // Don't trigger if focused on an input or button
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON') return;
+                e.preventDefault();
+                newRandomColor();
             }
         });
 
@@ -1846,6 +2315,33 @@
                 saveCurrentResult();
             }
         });
+
+        // --- Random Color ---
+        async function newRandomColor() {
+            try {
+                const resp = await fetch(API + '/random');
+                if (!resp.ok) throw new Error('API error');
+                const data = await resp.json();
+                const hex = data.color || data.hex;
+                const textColor = getTextColor(hex);
+
+                randomDisplay.style.background = hex;
+                randomDisplay.style.color = textColor;
+                randomDescriptor.textContent = data.descriptor || '';
+                randomName.textContent = data.name || '';
+                randomHex.textContent = hex.toUpperCase();
+
+                // Style the button to match
+                randomBtn.style.borderColor = textColor;
+                randomBtn.style.color = textColor;
+
+                announce(`${data.descriptor || ''}: ${data.name || ''}, ${hex}`);
+            } catch (e) {
+                console.error('Random color error:', e);
+            }
+        }
+
+        randomBtn.addEventListener('click', newRandomColor);
 
         // --- Saved Colors ---
         function renderSaved() {
@@ -1891,13 +2387,7 @@
             });
         }
 
-        function escapeHtml(str) {
-            const div = document.createElement('div');
-            div.textContent = str || '';
-            return div.innerHTML;
-        }
-
-        // --- Swatch Detail ---
+        // --- Swatch Detail (Saved tab) ---
         function openSwatchDetail(id) {
             const saved = getSaved();
             const item = saved.find(s => s.id === id);
@@ -1907,8 +2397,8 @@
             const textColor = getTextColor(item.matchedHex);
             swatchDetailColor.style.background = item.matchedHex;
             swatchDetailColor.style.color = textColor;
-            detailName.textContent = item.matchedName;
-            detailFamily.textContent = item.family;
+            swatchDetailName.textContent = item.matchedName;
+            swatchDetailFamily.textContent = item.family;
             detailLabelInput.value = item.label || '';
             detailSampledHex.textContent = item.sampledHex;
             detailMatchedHex.textContent = item.matchedHex;
@@ -2050,7 +2540,7 @@
             {
                 icon: '?',
                 title: 'What Color Is This?',
-                text: 'Point your camera at anything and find out exactly what color it is — by name.'
+                text: 'Point your camera at anything and find out exactly what color it is \u2014 by name.'
             },
             {
                 icon: '\uD83D\uDCF7',
@@ -2065,7 +2555,7 @@
             {
                 icon: '\uD83D\uDD17',
                 title: 'Color Harmonies',
-                text: 'See complementary, analogous, and triadic colors — handy for picking outfits, design palettes, or just exploring.'
+                text: 'See complementary, analogous, and triadic colors \u2014 handy for picking outfits, design palettes, or just exploring.'
             },
             {
                 icon: '\uD83D\uDCBE',
