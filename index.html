@@ -746,7 +746,15 @@
         .hex-copy {
             cursor: pointer;
             position: relative;
+            text-decoration: underline;
+            text-decoration-style: dashed;
+            text-underline-offset: 3px;
+            text-decoration-thickness: 1px;
+            text-decoration-color: currentColor;
+            opacity: 0.85;
+            transition: opacity 0.15s ease;
         }
+        .hex-copy:hover, .hex-copy:active { opacity: 1; }
         .hex-copy::after {
             content: 'copied';
             position: absolute;
@@ -903,13 +911,11 @@
         }
         .pyramid-tier-1 {
             width: 50%;
-            padding: 8px 16px;
-            background: var(--surface-raised);
-            font-size: 0.75rem;
-            font-weight: 600;
+            padding: 10px 16px;
+            font-size: 0.8rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            color: var(--text-muted);
         }
         .pyramid-arrow {
             color: var(--border);
@@ -917,9 +923,7 @@
         }
         .pyramid-tier-2 {
             width: 75%;
-            padding: 10px 16px;
-            background: var(--surface);
-            border: 1px solid var(--border);
+            padding: 12px 16px;
             font-size: 1.05rem;
             font-weight: 600;
         }
@@ -936,7 +940,6 @@
             font-family: 'Courier New', monospace;
             font-weight: 500;
             opacity: 0.75;
-            cursor: pointer;
         }
 
         .detail-values {
@@ -1621,21 +1624,21 @@
                 </svg>
                 Details
             </button>
-            <button class="feature-btn" id="btn-harmonies" aria-label="View color harmonies">
+            <button class="feature-btn" id="btn-harmonies" aria-label="View matching colors">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <circle cx="13.5" cy="6.5" r="2.5"/>
                     <circle cx="17.5" cy="15.5" r="2.5"/>
                     <circle cx="8.5" cy="15.5" r="2.5"/>
                     <circle cx="13" cy="13" r="8"/>
                 </svg>
-                Harmonies
+                Matching
             </button>
-            <button class="feature-btn" id="btn-accessible" aria-label="View accessible palettes">
+            <button class="feature-btn" id="btn-accessible" aria-label="View colors that go with this">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                     <circle cx="12" cy="12" r="3"/>
                 </svg>
-                Accessible
+                Goes With
             </button>
         </div>
 
@@ -1704,9 +1707,9 @@
 
     <!-- ========== HARMONIES MODAL ========== -->
     <div class="modal-overlay" id="harmonies-overlay"></div>
-    <div class="modal" id="harmonies-modal" role="dialog" aria-modal="true" aria-label="Color harmonies">
+    <div class="modal" id="harmonies-modal" role="dialog" aria-modal="true" aria-label="Matching colors">
         <div class="modal-header">
-            <h3>Harmonies</h3>
+            <h3>Matching</h3>
             <button class="modal-close" id="harmonies-close" aria-label="Close harmonies">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
@@ -1716,9 +1719,9 @@
 
     <!-- ========== ACCESSIBLE MODAL ========== -->
     <div class="modal-overlay" id="a11y-overlay"></div>
-    <div class="modal" id="a11y-modal" role="dialog" aria-modal="true" aria-label="Accessible palettes">
+    <div class="modal" id="a11y-modal" role="dialog" aria-modal="true" aria-label="Colors that go with this">
         <div class="modal-header">
-            <h3>Accessible Palettes</h3>
+            <h3>Goes With</h3>
             <button class="modal-close" id="a11y-close" aria-label="Close accessible palettes">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
@@ -2249,6 +2252,29 @@
             document.getElementById(overlayId).classList.remove('open');
         }
 
+        // Family → representative color map
+        const FAMILY_HEX = {
+            'red': '#DC2626', 'orange': '#EA580C', 'yellow-orange': '#D97706',
+            'yellow': '#CA8A04', 'yellow-green': '#65A30D', 'green': '#16A34A',
+            'teal': '#0D9488', 'blue': '#2563EB', 'purple': '#7C3AED',
+            'magenta': '#C026D3', 'pink': '#DB2777',
+            'white': '#E8E8E8', 'black': '#1C1C1C', 'gray': '#6B7280'
+        };
+
+        // Blend toward a color: mix sampled hex toward the family pure hue
+        function descriptorColor(sampledHex, familyHex) {
+            // 50/50 blend between sampled color and pure family hue
+            const s = hexToRgbArr(sampledHex), f = hexToRgbArr(familyHex);
+            const r = Math.round((s[0] + f[0]) / 2);
+            const g = Math.round((s[1] + f[1]) / 2);
+            const b = Math.round((s[2] + f[2]) / 2);
+            return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+        }
+        function hexToRgbArr(h) {
+            h = h.replace('#','');
+            return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+        }
+
         // Details modal
         document.getElementById('btn-details').addEventListener('click', () => {
             if (!currentResult || !currentApiData) return;
@@ -2256,9 +2282,24 @@
             const hex = match.hex.toUpperCase();
             const tc = getTextColor(hex);
             const rgb = match.rgb || [];
+            const family = currentApiData.family;
 
-            document.getElementById('detail-modal-family').textContent = currentApiData.family;
-            document.getElementById('detail-modal-descriptor').textContent = currentApiData.descriptor;
+            // Color each pyramid tier
+            const familyHex = FAMILY_HEX[family] || '#6B7280';
+            const familyTc = getTextColor(familyHex);
+            const descHex = descriptorColor(hex, familyHex);
+            const descTc = getTextColor(descHex);
+
+            const t1 = document.getElementById('detail-modal-family');
+            t1.textContent = family;
+            t1.style.background = familyHex;
+            t1.style.color = familyTc;
+
+            const t2 = document.getElementById('detail-modal-descriptor');
+            t2.textContent = currentApiData.descriptor;
+            t2.style.background = descHex;
+            t2.style.color = descTc;
+
             document.getElementById('detail-modal-name').textContent = match.name;
             document.getElementById('detail-modal-hex-inline').textContent = hex;
 
