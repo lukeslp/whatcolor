@@ -40,6 +40,7 @@
             --radius: 12px;
             --radius-sm: 8px;
             --transition: 0.3s ease;
+            --safe-top: env(safe-area-inset-top, 0px);
             --safe-bottom: env(safe-area-inset-bottom, 0px);
             --tab-height: 60px;
         }
@@ -69,6 +70,8 @@
             position: fixed;
             top: 0;
             left: 0;
+            padding-top: var(--safe-top);
+            padding-bottom: calc(var(--tab-height) + var(--safe-bottom));
         }
 
         /* --- Tab Panels --- */
@@ -192,8 +195,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 24px 20px;
-            padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 20px);
+            padding: 24px 20px 20px;
             background: linear-gradient(transparent, rgba(0,0,0,0.6));
             z-index: 10;
         }
@@ -268,7 +270,6 @@
         /* --- Upload Tab --- */
         #upload-panel {
             padding: 20px;
-            padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 20px);
             overflow-y: auto;
         }
         .drop-zone {
@@ -381,7 +382,6 @@
         /* --- Saved Tab --- */
         #saved-panel {
             padding: 16px;
-            padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 20px);
             overflow-y: auto;
         }
         .saved-header {
@@ -621,7 +621,6 @@
         }
         .random-controls {
             padding: 20px;
-            padding-bottom: calc(20px + var(--tab-height) + var(--safe-bottom));
             display: flex;
             justify-content: center;
         }
@@ -1631,7 +1630,7 @@
                     <circle cx="8.5" cy="15.5" r="2.5"/>
                     <circle cx="13" cy="13" r="8"/>
                 </svg>
-                Matches With
+                Matches
             </button>
             <button class="feature-btn" id="btn-accessible" aria-label="Accessible color palettes">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1709,7 +1708,7 @@
     <div class="modal-overlay" id="harmonies-overlay"></div>
     <div class="modal" id="harmonies-modal" role="dialog" aria-modal="true" aria-label="Colors that match">
         <div class="modal-header">
-            <h3>Matches With</h3>
+            <h3>Matches</h3>
             <button class="modal-close" id="harmonies-close" aria-label="Close harmonies">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
