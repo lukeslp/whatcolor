@@ -1,0 +1,28 @@
+{
+  "packageId": "one.whatcoloristhis.twa",
+  "host": "whatcoloristhis.one",
+  "name": "What Color Is This?",
+  "launcherName": "What Color",
+  "display": "standalone",
+  "themeColor": "#1a1a1a",
+  "navigationColor": "#1a1a1a",
+  "backgroundColor": "#1a1a1a",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://whatcoloristhis.one/icon-512.png",
+  "maskableIconUrl": "https://whatcoloristhis.one/icon-maskable-512.png",
+  "shortcuts": [
+    {"name": "Camera", "url": "/?tab=camera", "icons": [{"src": "https://whatcoloristhis.one/icon-96.png"}]},
+    {"name": "Upload", "url": "/?tab=upload", "icons": [{"src": "https://whatcoloristhis.one/icon-96.png"}]},
+    {"name": "Random", "url": "/?tab=random", "icons": [{"src": "https://whatcoloristhis.one/icon-96.png"}]}
+  ],
+  "signingKey": {
+    "path": "./whatcolor-keystore.jks",
+    "alias": "whatcolor"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "splashScreenFadeOutDuration": 300,
+  "fallbackType": "customtabs",
+  "enableSiteSettingsShortcut": true
+}
