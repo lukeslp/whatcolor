@@ -2947,26 +2947,57 @@
 
         // --- Initialization ---
         function init() {
-            // Detect mobile vs desktop for default tab
+            const params = new URLSearchParams(window.location.search);
             const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
             const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 
-            if (isMobile && hasGetUserMedia) {
+            // Handle shortcut deep links (?tab=camera, ?tab=upload, ?tab=random)
+            const tabParam = params.get('tab');
+            if (tabParam && document.getElementById('tab-' + tabParam)) {
+                switchTab('tab-' + tabParam);
+            } else if (isMobile && hasGetUserMedia) {
                 switchTab('tab-camera');
             } else if (hasGetUserMedia) {
-                // Desktop with camera: still default to upload, camera available
                 switchTab('tab-upload');
             } else {
-                // No camera support at all
                 switchTab('tab-upload');
-                // Hide camera tab messaging
                 cameraControls.style.display = 'none';
                 cameraCrosshair.style.display = 'none';
                 cameraMessage.style.display = 'flex';
                 cameraMessageText.textContent = 'Camera is not available in this browser. Use the Upload tab to identify colors from photos.';
             }
 
+            // Handle share_target: image shared to this app
+            if (params.get('share') === 'true') {
+                handleSharedImage();
+            }
+
             renderSaved();
+
+            // Clean URL params without reload
+            if (params.toString()) {
+                history.replaceState(null, '', window.location.pathname);
+            }
+        }
+
+        async function handleSharedImage() {
+            // Service worker caches the shared file; retrieve from cache
+            try {
+                const cache = await caches.open('whatcolor-shares');
+                const requests = await cache.keys();
+                if (requests.length > 0) {
+                    const response = await cache.match(requests[0]);
+                    const blob = await response.blob();
+                    await cache.delete(requests[0]);
+                    // Load into upload tab
+                    switchTab('tab-upload');
+                    const file = new File([blob], 'shared-image.jpg', { type: blob.type });
+                    handleFile(file);
+                }
+            } catch (e) {
+                // Fallback: just switch to upload tab
+                switchTab('tab-upload');
+            }
         }
 
         init();
