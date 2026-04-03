@@ -589,7 +589,9 @@
         .btn-danger:hover { background: rgba(224, 85, 85, 0.25); }
 
         /* --- Random Tab --- */
-        #random-panel { background: var(--bg); }
+        #random-panel {
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
         .random-display {
             flex: 1;
             display: flex;
@@ -597,11 +599,10 @@
             align-items: center;
             justify-content: center;
             padding: 30px;
-            transition: background-color 0.5s ease, color 0.5s ease;
             text-align: center;
         }
         .random-descriptor {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
             text-transform: capitalize;
             margin-bottom: 8px;
@@ -883,44 +884,59 @@
         .modal-body { padding: 16px 20px; }
 
         /* --- Details Modal --- */
-        .detail-tiers { padding: 8px 0 20px; }
-        .detail-tier {
+        /* Detail pyramid: each tier is a widening bar */
+        .detail-pyramid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 0 24px;
+        }
+        .pyramid-tier {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 4px 0;
+            justify-content: center;
+            border-radius: 10px;
+            text-align: center;
+            text-transform: capitalize;
+            transition: background 0.3s ease;
         }
-        .detail-tier-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            background: var(--accent);
-            flex-shrink: 0;
-        }
-        .detail-tier-line {
-            width: 1px; height: 16px;
-            background: var(--border);
-            margin-left: 4.5px;
-        }
-        .detail-tier-label {
+        .pyramid-tier-1 {
+            width: 50%;
+            padding: 8px 16px;
+            background: var(--surface-raised);
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--text-muted);
+        }
+        .pyramid-arrow {
+            color: var(--border);
+            font-size: 0.7rem;
+        }
+        .pyramid-tier-2 {
+            width: 75%;
+            padding: 10px 16px;
             background: var(--surface);
-            padding: 4px 12px;
-            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 1.05rem;
+            font-weight: 600;
         }
-        .detail-tier-text {
+        .pyramid-tier-3 {
+            width: 100%;
+            padding: 14px 16px;
             font-size: 1.1rem;
-            font-weight: 600;
-            text-transform: capitalize;
+            font-weight: 700;
+            flex-direction: column;
+            gap: 4px;
         }
-        .detail-name-swatch {
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
+        .pyramid-tier-3-hex {
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+            opacity: 0.75;
+            cursor: pointer;
         }
 
         .detail-values {
@@ -1121,6 +1137,153 @@
             border: 0;
         }
 
+        /* --- Settings Button --- */
+        .settings-gear {
+            position: fixed;
+            top: calc(env(safe-area-inset-top, 0px) + 12px);
+            right: 12px;
+            z-index: 90;
+            width: 40px;
+            height: 40px;
+            min-width: 44px;
+            min-height: 44px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: none;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease, background 0.2s ease;
+        }
+        .settings-gear:hover { color: rgba(255,255,255,0.9); background: rgba(0,0,0,0.5); }
+        .settings-gear svg { width: 20px; height: 20px; }
+
+        /* --- Settings Panel --- */
+        .settings-section {
+            margin-bottom: 24px;
+        }
+        .settings-section:last-child { margin-bottom: 0; }
+        .settings-section-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .settings-row:last-child { border-bottom: none; }
+        .settings-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .settings-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        /* Toggle switch */
+        .toggle {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-track {
+            position: absolute;
+            inset: 0;
+            background: var(--surface-raised);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .toggle-track::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: var(--text);
+            border-radius: 50%;
+            transition: transform 0.2s ease;
+        }
+        .toggle input:checked + .toggle-track {
+            background: var(--accent);
+        }
+        .toggle input:checked + .toggle-track::after {
+            transform: translateX(20px);
+        }
+        .toggle input:focus-visible + .toggle-track {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        .settings-select {
+            background: var(--surface-raised);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-family: inherit;
+            cursor: pointer;
+            min-width: 140px;
+        }
+        .settings-select:focus { outline: none; border-color: var(--accent); }
+        .settings-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background: var(--surface-raised);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 44px;
+        }
+        .settings-btn:hover { background: var(--border); }
+        .settings-btn svg { width: 18px; height: 18px; color: var(--text-muted); flex-shrink: 0; }
+
+        /* A11y overrides */
+        body.high-contrast {
+            --bg: #000;
+            --surface: #111;
+            --surface-raised: #222;
+            --text: #fff;
+            --text-muted: #ccc;
+            --border: #555;
+        }
+        body.large-text {
+            font-size: 118%;
+        }
+        body.reduce-motion,
+        body.reduce-motion * {
+            transition-duration: 0.01ms !important;
+            animation-duration: 0.01ms !important;
+        }
+
         /* --- Animations --- */
         @keyframes spin {
             to { transform: rotate(360deg); }
@@ -1233,6 +1396,79 @@
     </style>
 </head>
 <body>
+
+    <!-- Settings gear -->
+    <button class="settings-gear" id="settings-gear" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+    </button>
+
+    <!-- Settings modal -->
+    <div class="modal-overlay" id="settings-overlay"></div>
+    <div class="modal" id="settings-modal" role="dialog" aria-modal="true" aria-label="Settings">
+        <div class="modal-header">
+            <h3>Settings</h3>
+            <button class="modal-close" id="settings-close" aria-label="Close settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="settings-section">
+                <div class="settings-section-label">Visual Accessibility</div>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">High Contrast</div>
+                        <div class="settings-desc">Stronger borders and brighter text</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="setting-contrast" aria-label="High contrast mode">
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">Larger Text</div>
+                        <div class="settings-desc">Increase base font size</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="setting-large-text" aria-label="Larger text">
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">Reduce Motion</div>
+                        <div class="settings-desc">Minimize animations and transitions</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="setting-reduce-motion" aria-label="Reduce motion">
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">Color Vision Type</div>
+                        <div class="settings-desc">Personalize accessible palette suggestions</div>
+                    </div>
+                    <select class="settings-select" id="setting-cvd" aria-label="Color vision type">
+                        <option value="none">Typical vision</option>
+                        <option value="protanopia">Protanopia (red-weak)</option>
+                        <option value="deuteranopia">Deuteranopia (green-weak)</option>
+                        <option value="tritanopia">Tritanopia (blue-weak)</option>
+                        <option value="unknown">Not sure</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-section-label">App</div>
+                <button class="settings-btn" id="setting-replay-tour" aria-label="Replay onboarding tour">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    Replay Tour
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Screen reader live region -->
     <div id="announcer" aria-live="polite" aria-atomic="true"></div>
@@ -1468,22 +1704,14 @@
             </button>
         </div>
         <div class="modal-body">
-            <div class="detail-tiers">
-                <div class="detail-tier">
-                    <span class="detail-tier-dot"></span>
-                    <span class="detail-tier-label" id="detail-modal-family"></span>
-                </div>
-                <div class="detail-tier-line"></div>
-                <div class="detail-tier">
-                    <span class="detail-tier-dot"></span>
-                    <span class="detail-tier-text" id="detail-modal-descriptor"></span>
-                </div>
-                <div class="detail-tier-line"></div>
-                <div class="detail-tier">
-                    <span class="detail-tier-dot"></span>
-                    <div class="detail-name-swatch" id="detail-modal-name-swatch">
-                        <span id="detail-modal-name"></span>
-                    </div>
+            <div class="detail-pyramid">
+                <div class="pyramid-tier pyramid-tier-1" id="detail-modal-family"></div>
+                <div class="pyramid-arrow" aria-hidden="true">&#9660;</div>
+                <div class="pyramid-tier pyramid-tier-2" id="detail-modal-descriptor"></div>
+                <div class="pyramid-arrow" aria-hidden="true">&#9660;</div>
+                <div class="pyramid-tier pyramid-tier-3" id="detail-modal-name-swatch">
+                    <span id="detail-modal-name"></span>
+                    <span class="pyramid-tier-3-hex hex-copy" id="detail-modal-hex-inline"></span>
                 </div>
             </div>
 
@@ -2056,6 +2284,7 @@
             document.getElementById('detail-modal-family').textContent = currentApiData.family;
             document.getElementById('detail-modal-descriptor').textContent = currentApiData.descriptor;
             document.getElementById('detail-modal-name').textContent = match.name;
+            document.getElementById('detail-modal-hex-inline').textContent = hex;
 
             const ns = document.getElementById('detail-modal-name-swatch');
             ns.style.background = hex;
@@ -2247,11 +2476,77 @@
         resultOverlay.addEventListener('click', hideResult);
         resultRetryBtn.addEventListener('click', hideResult);
 
+        // --- Settings ---
+        const SETTINGS_KEY = 'whatcolor_settings';
+        function loadSettings() {
+            try { return JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {}; } catch { return {}; }
+        }
+        function saveSettings(s) { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
+
+        const settingsState = loadSettings();
+        const settingContrast = document.getElementById('setting-contrast');
+        const settingLargeText = document.getElementById('setting-large-text');
+        const settingReduceMotion = document.getElementById('setting-reduce-motion');
+        const settingCvd = document.getElementById('setting-cvd');
+
+        // Apply saved settings
+        function applySettings(s) {
+            document.body.classList.toggle('high-contrast', !!s.highContrast);
+            document.body.classList.toggle('large-text', !!s.largeText);
+            document.body.classList.toggle('reduce-motion', !!s.reduceMotion);
+            settingContrast.checked = !!s.highContrast;
+            settingLargeText.checked = !!s.largeText;
+            settingReduceMotion.checked = !!s.reduceMotion;
+            settingCvd.value = s.cvdType || 'none';
+        }
+        applySettings(settingsState);
+
+        // Detect prefers-reduced-motion
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches && !settingsState.reduceMotion) {
+            settingsState.reduceMotion = true;
+            applySettings(settingsState);
+            saveSettings(settingsState);
+        }
+
+        settingContrast.addEventListener('change', () => {
+            settingsState.highContrast = settingContrast.checked;
+            applySettings(settingsState); saveSettings(settingsState);
+        });
+        settingLargeText.addEventListener('change', () => {
+            settingsState.largeText = settingLargeText.checked;
+            applySettings(settingsState); saveSettings(settingsState);
+        });
+        settingReduceMotion.addEventListener('change', () => {
+            settingsState.reduceMotion = settingReduceMotion.checked;
+            applySettings(settingsState); saveSettings(settingsState);
+        });
+        settingCvd.addEventListener('change', () => {
+            settingsState.cvdType = settingCvd.value;
+            saveSettings(settingsState);
+        });
+
+        document.getElementById('settings-gear').addEventListener('click', () => {
+            openModal('settings-overlay', 'settings-modal');
+        });
+        document.getElementById('settings-close').addEventListener('click', () => {
+            closeModal('settings-overlay', 'settings-modal');
+        });
+        document.getElementById('settings-overlay').addEventListener('click', () => {
+            closeModal('settings-overlay', 'settings-modal');
+        });
+        document.getElementById('setting-replay-tour').addEventListener('click', () => {
+            closeModal('settings-overlay', 'settings-modal');
+            localStorage.removeItem('whatcolor_tour_done');
+            if (window.replayTour) window.replayTour();
+        });
+
         // Escape key closes modals in order
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 // Close modals from top to bottom
-                if (document.getElementById('details-modal').classList.contains('open')) {
+                if (document.getElementById('settings-modal').classList.contains('open')) {
+                    closeModal('settings-overlay', 'settings-modal');
+                } else if (document.getElementById('details-modal').classList.contains('open')) {
                     closeModal('details-overlay', 'details-modal');
                 } else if (document.getElementById('harmonies-modal').classList.contains('open')) {
                     closeModal('harmonies-overlay', 'harmonies-modal');
@@ -2325,8 +2620,10 @@
                 const hex = data.color || data.hex;
                 const textColor = getTextColor(hex);
 
-                randomDisplay.style.background = hex;
-                randomDisplay.style.color = textColor;
+                // Color the entire panel
+                const panel = document.getElementById('random-panel');
+                panel.style.backgroundColor = hex;
+                panel.style.color = textColor;
                 randomDescriptor.textContent = data.descriptor || '';
                 randomName.textContent = data.name || '';
                 randomHex.textContent = hex.toUpperCase();
@@ -2532,65 +2829,54 @@
         </div>
     </div>
     <script>
+    // Tour — replayable, 3 steps
     (function() {
         const TOUR_KEY = 'whatcolor_tour_done';
-        if (localStorage.getItem(TOUR_KEY)) return;
-
         const steps = [
             {
                 icon: '?',
                 title: 'What Color Is This?',
-                text: 'Point your camera at anything and find out exactly what color it is \u2014 by name.'
-            },
-            {
-                icon: '\uD83D\uDCF7',
-                title: 'Camera or Photo',
-                text: 'Use your camera for live sampling, or upload any image and tap to pick a color.'
+                text: 'Point your camera at anything to identify its color by name. Upload a photo, or explore random colors.'
             },
             {
                 icon: '\uD83C\uDFA8',
-                title: 'Three-Level ID',
-                text: 'Every color gets a plain-language descriptor ("muted blue"), the closest name from 30,000 colors, and a confidence rating.'
-            },
-            {
-                icon: '\uD83D\uDD17',
-                title: 'Color Harmonies',
-                text: 'See complementary, analogous, and triadic colors \u2014 handy for picking outfits, design palettes, or just exploring.'
+                title: 'Identify, Save, Explore',
+                text: 'Get a plain-language descriptor, the closest named color from 30,000, harmonies for outfits and design, and colorblind-safe palettes.'
             },
             {
                 icon: '\uD83D\uDCBE',
-                title: 'Save and Label',
-                text: 'Save any color with a personal note. "Sarah\'s favorite color," "that paint sample," whatever matters to you.'
+                title: 'Your Color Library',
+                text: 'Save any color with a personal label. Export your collection as JSON. Everything stays on your device.'
             }
         ];
 
-        let current = 0;
         const overlay = document.getElementById('tour');
-        const icon = document.getElementById('tour-icon');
-        const title = document.getElementById('tour-title');
-        const text = document.getElementById('tour-text');
-        const dots = document.getElementById('tour-dots');
+        const iconEl = document.getElementById('tour-icon');
+        const titleEl = document.getElementById('tour-title');
+        const textEl = document.getElementById('tour-text');
+        const dotsEl = document.getElementById('tour-dots');
         const nextBtn = document.getElementById('tour-next');
         const skipBtn = document.getElementById('tour-skip');
+        let current = 0;
 
-        // Build dots
-        steps.forEach((_, i) => {
-            const d = document.createElement('div');
-            d.className = 'tour-dot' + (i === 0 ? ' active' : '');
-            dots.appendChild(d);
-        });
+        function buildDots() {
+            dotsEl.innerHTML = '';
+            steps.forEach((_, i) => {
+                const d = document.createElement('div');
+                d.className = 'tour-dot' + (i === 0 ? ' active' : '');
+                dotsEl.appendChild(d);
+            });
+        }
 
         function show(idx) {
             current = idx;
             const s = steps[idx];
-            icon.textContent = s.icon;
-            title.textContent = s.title;
-            text.textContent = s.text;
-            dots.querySelectorAll('.tour-dot').forEach((d, i) => {
-                d.classList.toggle('active', i === idx);
-            });
+            iconEl.textContent = s.icon;
+            titleEl.textContent = s.title;
+            textEl.textContent = s.text;
+            dotsEl.querySelectorAll('.tour-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
             nextBtn.textContent = idx === steps.length - 1 ? 'Get Started' : 'Next';
-            if (idx === steps.length - 1) skipBtn.style.display = 'none';
+            skipBtn.style.display = idx === steps.length - 1 ? 'none' : '';
         }
 
         function dismiss() {
@@ -2599,21 +2885,27 @@
             localStorage.setItem(TOUR_KEY, '1');
         }
 
+        function startTour() {
+            current = 0;
+            buildDots();
+            show(0);
+            skipBtn.style.display = '';
+            overlay.classList.remove('hidden');
+            requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('visible')));
+        }
+
         nextBtn.addEventListener('click', () => {
             if (current < steps.length - 1) show(current + 1);
             else dismiss();
         });
         skipBtn.addEventListener('click', dismiss);
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) dismiss();
-        });
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) dismiss(); });
 
-        // Show tour after a brief delay
-        show(0);
-        overlay.classList.remove('hidden');
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => overlay.classList.add('visible'));
-        });
+        // Expose for settings panel
+        window.replayTour = startTour;
+
+        // Auto-show on first visit
+        if (!localStorage.getItem(TOUR_KEY)) startTour();
     })();
     </script>
     <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
