@@ -526,7 +526,29 @@ last_color = None
 
 @app.route('/')
 def index():
-    """Serve the main HTML page"""
+    """Serve the main HTML page with per-domain meta tags."""
+    host = request.host.split(':')[0]
+    if 'whatcoloristhat' in host:
+        # Read and patch meta tags for the "that" domain
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'index.html')) as f:
+            html = f.read()
+        html = html.replace(
+            '<title>What Color Is This?</title>',
+            '<title>What Color Is That?</title>'
+        ).replace(
+            'og:title" content="What Color Is This?"',
+            'og:title" content="What Color Is That?"'
+        ).replace(
+            'og:description" content="Aim your camera at a color',
+            'og:description" content="No seriously, what color is that? I genuinely cannot tell. Aim your camera at a color'
+        ).replace(
+            'og-image-this.png',
+            'og-image-that.png'
+        ).replace(
+            'whatcoloristhis.one/',
+            'whatcoloristhat.one/'
+        )
+        return html, 200, {'Content-Type': 'text/html; charset=utf-8'}
     return send_from_directory('.', 'index.html')
 
 

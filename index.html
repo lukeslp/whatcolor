@@ -7,13 +7,31 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>What Color Is This?</title>
-    <meta name="description" content="Point your camera at anything to identify its color by name">
+    <meta name="description" content="Aim your camera at a color — get its name, details, matches, plus colorblind palettes and simulation. Save colors with personal labels.">
     <meta property="og:title" content="What Color Is This?">
-    <meta property="og:description" content="Point your camera at anything to identify its color by name">
+    <meta property="og:description" content="Aim your camera at a color — get its name, details, matches, plus colorblind palettes and simulation. Save colors with personal labels.">
     <meta property="og:url" content="https://whatcoloristhis.one/">
-    <meta property="og:image" content="https://whatcoloristhis.one/og-image.png">
+    <meta property="og:image" content="https://whatcoloristhis.one/og-image-this.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://whatcoloristhis.one/og-image.png">
+    <meta name="twitter:image" content="https://whatcoloristhis.one/og-image-this.png">
+    <script>
+    // Per-domain branding
+    (function() {
+        var h = location.hostname;
+        if (h.indexOf('whatcoloristhat') !== -1) {
+            document.title = 'What Color Is That?';
+            var m = document.querySelectorAll('meta');
+            for (var i = 0; i < m.length; i++) {
+                if (m[i].getAttribute('property') === 'og:title') m[i].content = 'What Color Is That?';
+                if (m[i].getAttribute('property') === 'og:description') m[i].content = 'No seriously, what color is that? I genuinely cannot tell.';
+                if (m[i].getAttribute('property') === 'og:url') m[i].content = 'https://whatcoloristhat.one/';
+                if (m[i].getAttribute('property') === 'og:image') m[i].content = 'https://whatcoloristhat.one/og-image-that.png';
+                if (m[i].getAttribute('name') === 'twitter:image') m[i].content = 'https://whatcoloristhat.one/og-image-that.png';
+                if (m[i].getAttribute('name') === 'description') m[i].content = 'No seriously, what color is that? I genuinely cannot tell.';
+            }
+        }
+    })();
+    </script>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
