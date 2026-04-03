@@ -50,7 +50,7 @@
 
             <meta-data
                 android:name="android.support.customtabs.trusted.ADDITIONAL_TRUSTED_ORIGINS"
-                android:value='["https://whatcoloristhat.one","https://whatcolouristhat.com"]' />
+                android:resource="@array/additional_trusted_origins" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

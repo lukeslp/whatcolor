@@ -7,4 +7,8 @@
     <string name="shortcut_upload_long">Upload Photo</string>
     <string name="shortcut_random_short">Random</string>
     <string name="shortcut_random_long">Random Color</string>
+    <string-array name="additional_trusted_origins">
+        <item>https://whatcoloristhat.one</item>
+        <item>https://whatcolouristhat.com</item>
+    </string-array>
 </resources>
