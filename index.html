@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>What Color Is This?</title>
+    <meta name="description" content="Point your camera at anything to identify its color by name">
+    <meta property="og:title" content="What Color Is This?">
+    <meta property="og:description" content="Point your camera at anything to identify its color by name">
+    <meta property="og:url" content="https://dr.eamer.dev/whatcolor/">
+    <meta name="twitter:card" content="summary">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="What Color Is This?">
+    <meta name="theme-color" content="#1a1a1a">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #1a1a1a;
+            --surface: #242424;
+            --surface-raised: #2e2e2e;
+            --text: #f0f0f0;
+            --text-muted: #999;
+            --accent: #6c8cff;
+            --accent-dim: #4a64c0;
+            --border: #3a3a3a;
+            --tab-bg: rgba(20, 20, 20, 0.85);
+            --danger: #e05555;
+            --success: #55b87a;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: 0.3s ease;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --tab-height: 60px;
+        }
+
+        html {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            height: 100dvh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: none;
+            overscroll-behavior: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        /* --- Tab Panels --- */
+        .tab-panel {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        .tab-panel.active { display: flex; }
+
+        /* --- Tab Bar --- */
+        .tab-bar {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--tab-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            padding-bottom: var(--safe-bottom);
+            height: calc(var(--tab-height) + var(--safe-bottom));
+        }
+        .tab-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 4px;
+            transition: color var(--transition);
+            min-height: 44px;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+        .tab-btn svg { width: 22px; height: 22px; transition: color var(--transition); }
+        .tab-btn.active { color: var(--accent); }
+        .tab-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+            border-radius: 4px;
+        }
+
+        /* --- Camera Tab --- */
+        #camera-panel {
+            background: #000;
+        }
+        .video-container {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 10;
+        }
+        .crosshair-ring {
+            width: 56px;
+            height: 56px;
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 50%;
+            position: relative;
+        }
+        .crosshair-ring::before,
+        .crosshair-ring::after {
+            content: '';
+            position: absolute;
+            background: rgba(255,255,255,0.8);
+        }
+        .crosshair-ring::before {
+            width: 1px;
+            height: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .crosshair-ring::after {
+            width: 14px;
+            height: 1px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .crosshair-sample {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 9px;
+            height: 9px;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .camera-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 20px;
+            padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 20px);
+            background: linear-gradient(transparent, rgba(0,0,0,0.6));
+            z-index: 10;
+        }
+        .capture-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #fff;
+            border: 4px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+            position: relative;
+        }
+        .capture-btn::after {
+            content: '';
+            position: absolute;
+            inset: 4px;
+            border-radius: 50%;
+            background: #fff;
+            transition: background 0.15s ease;
+        }
+        .capture-btn:hover { transform: scale(1.05); }
+        .capture-btn:active { transform: scale(0.93); }
+        .capture-btn:active::after { background: #ddd; }
+        .capture-btn:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 4px;
+        }
+
+        .torch-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 15;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition);
+        }
+        .torch-btn.visible { display: flex; }
+        .torch-btn.on { background: rgba(255, 204, 0, 0.4); }
+        .torch-btn svg { width: 22px; height: 22px; }
+        .torch-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .camera-message {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 32px;
+            text-align: center;
+            z-index: 5;
+        }
+        .camera-message p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+        .camera-message .msg-icon { font-size: 2.5rem; opacity: 0.6; }
+
+        /* --- Upload Tab --- */
+        #upload-panel {
+            padding: 20px;
+            padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 20px);
+            overflow-y: auto;
+        }
+        .drop-zone {
+            flex: 1;
+            min-height: 200px;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 40px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color var(--transition), background var(--transition);
+            position: relative;
+        }
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: rgba(108, 140, 255, 0.05);
+        }
+        .drop-zone:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        .drop-zone svg { width: 48px; height: 48px; color: var(--text-muted); }
+        .drop-zone p { color: var(--text-muted); font-size: 0.95rem; }
+        .drop-zone .browse-label {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-preview-container {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+        }
+        .upload-preview-container.active { display: flex; }
+        .upload-image-wrap {
+            flex: 1;
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: #000;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: crosshair;
+        }
+        .upload-image-wrap canvas {
+            max-width: 100%;
+            max-height: 60vh;
+            display: block;
+        }
+        .upload-crosshair {
+            position: absolute;
+            pointer-events: none;
+            z-index: 5;
+            display: none;
+        }
+        .upload-crosshair.visible { display: block; }
+        .upload-crosshair-inner {
+            width: 28px;
+            height: 28px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.3);
+            position: relative;
+            transform: translate(-50%, -50%);
+        }
+        .upload-crosshair-inner::before,
+        .upload-crosshair-inner::after {
+            content: '';
+            position: absolute;
+            background: #fff;
+            box-shadow: 0 0 1px rgba(0,0,0,0.4);
+        }
+        .upload-crosshair-inner::before {
+            width: 1px; height: 10px; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .upload-crosshair-inner::after {
+            width: 10px; height: 1px; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .upload-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .upload-hint {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        /* --- Saved Tab --- */
+        #saved-panel {
+            padding: 16px;
+            padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + 20px);
+            overflow-y: auto;
+        }
+        .saved-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .saved-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .saved-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-sm {
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background var(--transition);
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-sm:hover { background: var(--surface-raised); }
+        .btn-sm:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        .btn-sm svg { width: 16px; height: 16px; }
+
+        .saved-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        @media (min-width: 600px) {
+            .saved-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 900px) {
+            .saved-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        .swatch-card {
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform var(--transition), box-shadow var(--transition);
+            position: relative;
+        }
+        .swatch-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+        .swatch-card:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        .swatch-color {
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-end;
+            padding: 10px;
+            gap: 2px;
+        }
+        .swatch-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1.2;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .swatch-info {
+            padding: 10px;
+            background: var(--surface);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .swatch-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .swatch-family {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: capitalize;
+        }
+        .swatch-hex {
+            font-size: 0.7rem;
+            font-family: 'Courier New', monospace;
+            color: var(--text-muted);
+        }
+
+        .saved-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 60px 32px;
+            text-align: center;
+        }
+        .saved-empty svg { width: 56px; height: 56px; color: var(--text-muted); opacity: 0.5; }
+        .saved-empty h3 { font-size: 1.1rem; font-weight: 500; }
+        .saved-empty p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; }
+
+        /* --- Swatch Detail Modal --- */
+        .swatch-detail-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .swatch-detail-overlay.open { display: flex; }
+        .swatch-detail {
+            background: var(--surface);
+            border-radius: var(--radius);
+            max-width: 380px;
+            width: 100%;
+            overflow: hidden;
+            animation: fadeScale 0.25s ease;
+        }
+        .swatch-detail-color {
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-end;
+            padding: 20px;
+            gap: 4px;
+        }
+        .swatch-detail-color .detail-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .swatch-detail-color .detail-family {
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: capitalize;
+            opacity: 0.85;
+        }
+        .swatch-detail-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .detail-label-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .detail-label-input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .detail-label-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        .detail-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .detail-meta span { font-family: 'Courier New', monospace; color: var(--text); }
+        .detail-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .detail-actions .btn-sm { flex: 1; justify-content: center; }
+        .btn-danger {
+            background: rgba(224, 85, 85, 0.15);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        .btn-danger:hover { background: rgba(224, 85, 85, 0.25); }
+
+        /* --- Result Card --- */
+        .result-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 150;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition);
+        }
+        .result-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .result-card {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 160;
+            background: var(--surface);
+            border-radius: var(--radius) var(--radius) 0 0;
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.4);
+            transform: translateY(100%);
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .result-card.open { transform: translateY(0); }
+
+        .result-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px 0;
+        }
+        .result-card-header h3 {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .result-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition);
+            min-width: 44px;
+            min-height: 44px;
+        }
+        .result-close:hover { background: var(--surface-raised); }
+        .result-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .result-close svg { width: 18px; height: 18px; }
+
+        .result-swatches {
+            display: flex;
+            gap: 12px;
+            padding: 16px 20px;
+        }
+        .result-swatch {
+            flex: 1;
+            border-radius: var(--radius-sm);
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            position: relative;
+        }
+        .result-swatch-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.7;
+            font-weight: 500;
+        }
+        .result-swatch-hex {
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+
+        .result-info {
+            padding: 0 20px 8px;
+            text-align: center;
+        }
+        .result-descriptor {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: capitalize;
+            margin-bottom: 2px;
+            letter-spacing: -0.01em;
+        }
+        .result-family {
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .result-name {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .result-quality {
+            display: inline-block;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .result-quality[data-quality="exact"] { background: #2d6a4f; color: #b7e4c7; }
+        .result-quality[data-quality="very close"] { background: #2b4c3f; color: #a8d5ba; }
+        .result-quality[data-quality="close"] { background: #3a4a3f; color: #c8d8c0; }
+        .result-quality[data-quality="approximate"] { background: #4a4030; color: #d5c8a0; }
+        .result-quality[data-quality="rough"] { background: #4a3030; color: #d5a0a0; }
+        .result-values {
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+            color: var(--text-muted);
+        }
+
+        /* --- Color Harmonies --- */
+        .result-harmonies {
+            padding: 12px 20px 4px;
+            display: none;
+        }
+        .result-harmonies.open { display: block; }
+        .harmonies-toggle {
+            width: 100%;
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 10px 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+        .harmonies-toggle:hover { color: var(--text); border-color: var(--text-muted); }
+        .harmonies-toggle svg {
+            width: 16px; height: 16px;
+            transition: transform var(--transition);
+        }
+        .harmonies-toggle.open svg { transform: rotate(180deg); }
+        .harmony-group {
+            margin-top: 12px;
+        }
+        .harmony-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .harmony-swatches {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .harmony-chip {
+            flex: 1;
+            border-radius: var(--radius-sm);
+            padding: 10px 8px;
+            text-align: center;
+            min-height: 56px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+        .harmony-chip-desc {
+            font-size: 0.6rem;
+            font-weight: 500;
+            text-transform: capitalize;
+            opacity: 0.85;
+        }
+        .harmony-chip-hex {
+            font-size: 0.7rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .result-actions {
+            padding: 16px 20px;
+            padding-bottom: calc(20px + var(--safe-bottom));
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .result-save-row {
+            display: none;
+            gap: 8px;
+        }
+        .result-save-row.active { display: flex; }
+        .result-save-input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        .result-save-input:focus { outline: none; border-color: var(--accent); }
+
+        .result-btn-row {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background var(--transition), transform 0.15s ease;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { background: var(--accent-dim); }
+        .btn-secondary { background: var(--surface-raised); color: var(--text); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); }
+        .btn-confirm { background: var(--success); color: #fff; }
+        .btn-confirm:hover { background: #48a06a; }
+
+        /* --- Loading Spinner --- */
+        .spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        .spinner.active { display: block; }
+
+        /* --- Screen Reader Only --- */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* --- Live Region for Announcements --- */
+        #announcer {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* --- Animations --- */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes fadeScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Hidden canvas for sampling */
+        .hidden-canvas { display: none; }
+
+        /* Import file input */
+        .import-input { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Screen reader live region -->
+    <div id="announcer" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Hidden canvases for image processing -->
+    <canvas class="hidden-canvas" id="capture-canvas"></canvas>
+
+    <!-- ========== CAMERA TAB ========== -->
+    <div class="tab-panel active" id="camera-panel" role="tabpanel" aria-labelledby="tab-camera">
+        <div class="video-container" id="video-container">
+            <video id="camera-video" autoplay playsinline muted></video>
+            <div class="crosshair" id="camera-crosshair" aria-hidden="true">
+                <div class="crosshair-ring">
+                    <div class="crosshair-sample"></div>
+                </div>
+            </div>
+            <div class="camera-message" id="camera-message" style="display: none;">
+                <div class="msg-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                        <circle cx="12" cy="13" r="4"/>
+                    </svg>
+                </div>
+                <p id="camera-message-text"></p>
+            </div>
+            <button class="torch-btn" id="torch-btn" aria-label="Toggle flashlight" title="Toggle flashlight">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 18h6"/>
+                    <path d="M10 22h4"/>
+                    <path d="M12 2v1"/>
+                    <path d="M12 7a4 4 0 0 0-4 4c0 1.5.8 3 2 4h4c1.2-1 2-2.5 2-4a4 4 0 0 0-4-4z"/>
+                </svg>
+            </button>
+        </div>
+        <div class="camera-controls" id="camera-controls">
+            <button class="capture-btn" id="capture-btn" aria-label="Capture color from camera">
+                <span class="sr-only">Capture</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ========== UPLOAD TAB ========== -->
+    <div class="tab-panel" id="upload-panel" role="tabpanel" aria-labelledby="tab-upload">
+        <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="Upload an image. Drag and drop or click to browse.">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <p>Drag an image here or <span class="browse-label">browse files</span></p>
+            <input type="file" id="file-input" accept="image/*" aria-label="Choose an image file">
+        </div>
+
+        <div class="upload-preview-container" id="upload-preview">
+            <p class="upload-hint">Tap anywhere on the image to identify that color</p>
+            <div class="upload-image-wrap" id="upload-image-wrap">
+                <canvas id="upload-canvas"></canvas>
+                <div class="upload-crosshair" id="upload-crosshair" aria-hidden="true">
+                    <div class="upload-crosshair-inner"></div>
+                </div>
+            </div>
+            <div class="upload-actions">
+                <button class="btn btn-secondary" id="upload-new-btn" aria-label="Choose a different image">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="1 4 1 10 7 10"/>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                    </svg>
+                    New Image
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SAVED TAB ========== -->
+    <div class="tab-panel" id="saved-panel" role="tabpanel" aria-labelledby="tab-saved">
+        <div class="saved-header">
+            <h2>Saved Colors</h2>
+            <div class="saved-header-actions" id="saved-actions">
+                <button class="btn-sm" id="import-btn" aria-label="Import saved colors from JSON file">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Import
+                </button>
+                <button class="btn-sm" id="export-btn" aria-label="Export saved colors as JSON file">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Export
+                </button>
+                <input type="file" class="import-input" id="import-input" accept=".json,application/json" aria-label="Select JSON file to import">
+            </div>
+        </div>
+        <div id="saved-grid" class="saved-grid"></div>
+        <div class="saved-empty" id="saved-empty" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            <h3>No saved colors yet</h3>
+            <p>Capture a color from your camera or upload a photo to get started. Your saved colors will appear here.</p>
+        </div>
+    </div>
+
+    <!-- ========== SWATCH DETAIL MODAL ========== -->
+    <div class="swatch-detail-overlay" id="swatch-detail-overlay" role="dialog" aria-modal="true" aria-label="Color detail">
+        <div class="swatch-detail" id="swatch-detail">
+            <div class="swatch-detail-color" id="swatch-detail-color">
+                <div class="detail-name" id="detail-name"></div>
+                <div class="detail-family" id="detail-family"></div>
+            </div>
+            <div class="swatch-detail-body">
+                <div class="detail-label-row">
+                    <label for="detail-label-input" class="sr-only">Label</label>
+                    <input type="text" class="detail-label-input" id="detail-label-input" placeholder="Add a label..." maxlength="60" aria-label="Edit color label">
+                    <button class="btn-sm" id="detail-save-label" aria-label="Save label">Save</button>
+                </div>
+                <div class="detail-meta">
+                    <div>Sampled: <span id="detail-sampled-hex"></span></div>
+                    <div>Matched: <span id="detail-matched-hex"></span></div>
+                    <div>Saved: <span id="detail-saved-at"></span></div>
+                </div>
+                <div class="detail-actions">
+                    <button class="btn-sm btn-danger" id="detail-delete" aria-label="Delete this saved color">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                        Delete
+                    </button>
+                    <button class="btn-sm" id="detail-close" aria-label="Close detail view">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== RESULT CARD ========== -->
+    <div class="result-overlay" id="result-overlay"></div>
+    <div class="result-card" id="result-card" role="dialog" aria-modal="true" aria-label="Color identification result">
+        <div class="result-card-header">
+            <h3>Color Match</h3>
+            <button class="result-close" id="result-close" aria-label="Close result">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="result-swatches">
+            <div class="result-swatch" id="result-sampled">
+                <span class="result-swatch-label">Sampled</span>
+                <span class="result-swatch-hex" id="result-sampled-hex"></span>
+            </div>
+            <div class="result-swatch" id="result-matched">
+                <span class="result-swatch-label">Matched</span>
+                <span class="result-swatch-hex" id="result-matched-hex"></span>
+            </div>
+        </div>
+        <div class="result-info">
+            <div class="result-descriptor" id="result-descriptor"></div>
+            <div class="result-family" id="result-family"></div>
+            <div class="result-name" id="result-name"></div>
+            <span class="result-quality" id="result-quality"></span>
+            <div class="result-values" id="result-values"></div>
+            <div class="spinner" id="result-spinner" aria-label="Identifying color..."></div>
+        </div>
+        <div style="padding: 0 20px;">
+            <button class="harmonies-toggle" id="harmonies-toggle" aria-expanded="false" aria-controls="harmonies-panel">
+                Color Harmonies
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+        </div>
+        <div class="result-harmonies" id="harmonies-panel" role="region" aria-label="Color harmonies"></div>
+        <div class="result-actions">
+            <div class="result-save-row" id="result-save-row">
+                <label for="result-save-input" class="sr-only">Label for this color</label>
+                <input type="text" class="result-save-input" id="result-save-input" placeholder="Add a label (optional)" maxlength="60" aria-label="Label for this color">
+                <button class="btn btn-confirm" id="result-save-confirm" aria-label="Confirm save" style="flex: 0 0 auto; padding: 12px 18px;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="result-btn-row">
+                <button class="btn btn-primary" id="result-save-btn" aria-label="Save this color">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                        <polyline points="17 21 17 13 7 13 7 21"/>
+                        <polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Save
+                </button>
+                <button class="btn btn-secondary" id="result-retry-btn" aria-label="Try again">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== TAB BAR ========== -->
+    <nav class="tab-bar" role="tablist" aria-label="Main navigation">
+        <button class="tab-btn active" id="tab-camera" role="tab" aria-selected="true" aria-controls="camera-panel" tabindex="0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+            </svg>
+            Camera
+        </button>
+        <button class="tab-btn" id="tab-upload" role="tab" aria-selected="false" aria-controls="upload-panel" tabindex="-1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            Upload
+        </button>
+        <button class="tab-btn" id="tab-saved" role="tab" aria-selected="false" aria-controls="saved-panel" tabindex="-1">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Saved
+        </button>
+    </nav>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // --- API Configuration ---
+        const isLive = window.location.hostname.endsWith('.live');
+        const API = isLive ? '/api' : `${window.location.protocol}//${window.location.host}/whatcolor/api`;
+
+        // --- DOM References ---
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => document.querySelectorAll(sel);
+
+        const announcer = $('#announcer');
+        const captureCanvas = $('#capture-canvas');
+        const captureCtx = captureCanvas.getContext('2d', { willReadFrequently: true });
+
+        // Camera
+        const videoEl = $('#camera-video');
+        const videoContainer = $('#video-container');
+        const cameraCrosshair = $('#camera-crosshair');
+        const cameraMessage = $('#camera-message');
+        const cameraMessageText = $('#camera-message-text');
+        const cameraControls = $('#camera-controls');
+        const captureBtn = $('#capture-btn');
+        const torchBtn = $('#torch-btn');
+
+        // Upload
+        const dropZone = $('#drop-zone');
+        const fileInput = $('#file-input');
+        const uploadPreview = $('#upload-preview');
+        const uploadCanvas = $('#upload-canvas');
+        const uploadCtx = uploadCanvas.getContext('2d', { willReadFrequently: true });
+        const uploadImageWrap = $('#upload-image-wrap');
+        const uploadCrosshair = $('#upload-crosshair');
+        const uploadNewBtn = $('#upload-new-btn');
+
+        // Saved
+        const savedGrid = $('#saved-grid');
+        const savedEmpty = $('#saved-empty');
+        const exportBtn = $('#export-btn');
+        const importBtn = $('#import-btn');
+        const importInput = $('#import-input');
+
+        // Swatch detail
+        const swatchDetailOverlay = $('#swatch-detail-overlay');
+        const swatchDetailColor = $('#swatch-detail-color');
+        const detailName = $('#detail-name');
+        const detailFamily = $('#detail-family');
+        const detailLabelInput = $('#detail-label-input');
+        const detailSaveLabel = $('#detail-save-label');
+        const detailSampledHex = $('#detail-sampled-hex');
+        const detailMatchedHex = $('#detail-matched-hex');
+        const detailSavedAt = $('#detail-saved-at');
+        const detailDelete = $('#detail-delete');
+        const detailClose = $('#detail-close');
+
+        // Result card
+        const resultOverlay = $('#result-overlay');
+        const resultCard = $('#result-card');
+        const resultClose = $('#result-close');
+        const resultSampled = $('#result-sampled');
+        const resultSampledHex = $('#result-sampled-hex');
+        const resultMatched = $('#result-matched');
+        const resultMatchedHex = $('#result-matched-hex');
+        const resultDescriptor = $('#result-descriptor');
+        const resultFamily = $('#result-family');
+        const resultName = $('#result-name');
+        const resultQuality = $('#result-quality');
+        const resultValues = $('#result-values');
+        const resultSpinner = $('#result-spinner');
+        const harmoniesToggle = $('#harmonies-toggle');
+        const harmoniesPanel = $('#harmonies-panel');
+        const resultSaveBtn = $('#result-save-btn');
+        const resultSaveRow = $('#result-save-row');
+        const resultSaveInput = $('#result-save-input');
+        const resultSaveConfirm = $('#result-save-confirm');
+        const resultRetryBtn = $('#result-retry-btn');
+
+        // Tabs
+        const tabBtns = $$('.tab-btn');
+        const tabPanels = $$('.tab-panel');
+
+        // --- State ---
+        let cameraStream = null;
+        let cameraTrack = null;
+        let torchOn = false;
+        let torchSupported = false;
+        let currentResult = null;
+        let currentDetailId = null;
+        let uploadImage = null;
+
+        // --- Helpers ---
+        function announce(text) {
+            announcer.textContent = '';
+            requestAnimationFrame(() => { announcer.textContent = text; });
+        }
+
+        function getTextColor(hex) {
+            const r = parseInt(hex.substr(1, 2), 16);
+            const g = parseInt(hex.substr(3, 2), 16);
+            const b = parseInt(hex.substr(5, 2), 16);
+            return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.5 ? '#000' : '#fff';
+        }
+
+        function generateId() {
+            return 'c_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 6);
+        }
+
+        function getSaved() {
+            try {
+                return JSON.parse(localStorage.getItem('whatcolor_saved') || '[]');
+            } catch { return []; }
+        }
+
+        function setSaved(arr) {
+            localStorage.setItem('whatcolor_saved', JSON.stringify(arr));
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
+        }
+
+        function formatDate(iso) {
+            try {
+                const d = new Date(iso);
+                return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+            } catch { return iso; }
+        }
+
+        // --- Tab Navigation ---
+        function switchTab(tabId) {
+            const panels = { 'tab-camera': 'camera-panel', 'tab-upload': 'upload-panel', 'tab-saved': 'saved-panel' };
+            tabBtns.forEach(btn => {
+                const isActive = btn.id === tabId;
+                btn.classList.toggle('active', isActive);
+                btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                btn.setAttribute('tabindex', isActive ? '0' : '-1');
+            });
+            tabPanels.forEach(p => p.classList.remove('active'));
+            const targetPanel = $('#' + panels[tabId]);
+            if (targetPanel) targetPanel.classList.add('active');
+
+            if (tabId === 'tab-camera') {
+                startCamera();
+            } else {
+                stopCamera();
+            }
+            if (tabId === 'tab-saved') {
+                renderSaved();
+            }
+        }
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.id));
+        });
+
+        // Keyboard navigation for tabs
+        const tabBtnArr = Array.from(tabBtns);
+        tabBtns.forEach((btn, i) => {
+            btn.addEventListener('keydown', (e) => {
+                let next = -1;
+                if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    next = (i + 1) % tabBtnArr.length;
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    next = (i - 1 + tabBtnArr.length) % tabBtnArr.length;
+                } else if (e.key === 'Home') {
+                    next = 0;
+                } else if (e.key === 'End') {
+                    next = tabBtnArr.length - 1;
+                }
+                if (next >= 0) {
+                    e.preventDefault();
+                    tabBtnArr[next].focus();
+                    switchTab(tabBtnArr[next].id);
+                }
+            });
+        });
+
+        // --- Camera ---
+        async function startCamera() {
+            if (cameraStream) return;
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                });
+                videoEl.srcObject = cameraStream;
+                cameraTrack = cameraStream.getVideoTracks()[0];
+
+                // Check torch support
+                const capabilities = cameraTrack.getCapabilities ? cameraTrack.getCapabilities() : {};
+                torchSupported = !!(capabilities.torch);
+                torchBtn.classList.toggle('visible', torchSupported);
+                torchOn = false;
+                torchBtn.classList.remove('on');
+
+                cameraCrosshair.style.display = '';
+                cameraControls.style.display = '';
+                cameraMessage.style.display = 'none';
+            } catch (err) {
+                showCameraError(err);
+            }
+        }
+
+        function stopCamera() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(t => t.stop());
+                cameraStream = null;
+                cameraTrack = null;
+            }
+            videoEl.srcObject = null;
+            torchOn = false;
+            torchBtn.classList.remove('on', 'visible');
+        }
+
+        function showCameraError(err) {
+            cameraCrosshair.style.display = 'none';
+            cameraControls.style.display = 'none';
+            cameraMessage.style.display = 'flex';
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                cameraMessageText.textContent = 'Camera access was denied. You can still identify colors by uploading a photo.';
+            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                cameraMessageText.textContent = 'No camera found on this device. Switch to the Upload tab to identify colors from photos.';
+            } else {
+                cameraMessageText.textContent = 'Could not access camera. Try the Upload tab instead.';
+            }
+            // Auto-switch to upload on desktop or if denied
+            setTimeout(() => switchTab('tab-upload'), 1500);
+        }
+
+        // Torch toggle
+        torchBtn.addEventListener('click', async () => {
+            if (!cameraTrack || !torchSupported) return;
+            torchOn = !torchOn;
+            try {
+                await cameraTrack.applyConstraints({ advanced: [{ torch: torchOn }] });
+                torchBtn.classList.toggle('on', torchOn);
+                announce(torchOn ? 'Flashlight on' : 'Flashlight off');
+            } catch {
+                torchOn = false;
+                torchBtn.classList.remove('on');
+            }
+        });
+
+        // --- Sampling ---
+        function sampleArea(ctx, cx, cy, size) {
+            const half = Math.floor(size / 2);
+            const x = Math.max(0, cx - half);
+            const y = Math.max(0, cy - half);
+            const w = Math.min(size, ctx.canvas.width - x);
+            const h = Math.min(size, ctx.canvas.height - y);
+            if (w <= 0 || h <= 0) return null;
+            const data = ctx.getImageData(x, y, w, h).data;
+            let rSum = 0, gSum = 0, bSum = 0, count = 0;
+            for (let i = 0; i < data.length; i += 4) {
+                rSum += data[i];
+                gSum += data[i + 1];
+                bSum += data[i + 2];
+                count++;
+            }
+            if (count === 0) return null;
+            return {
+                r: Math.round(rSum / count),
+                g: Math.round(gSum / count),
+                b: Math.round(bSum / count)
+            };
+        }
+
+        // --- Capture from Camera ---
+        captureBtn.addEventListener('click', () => {
+            if (!cameraStream || videoEl.readyState < 2) return;
+
+            captureCanvas.width = videoEl.videoWidth;
+            captureCanvas.height = videoEl.videoHeight;
+            captureCtx.drawImage(videoEl, 0, 0);
+
+            const cx = Math.floor(captureCanvas.width / 2);
+            const cy = Math.floor(captureCanvas.height / 2);
+            const rgb = sampleArea(captureCtx, cx, cy, 7);
+            if (!rgb) return;
+
+            const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+            if (navigator.vibrate) navigator.vibrate(50);
+            identifyColor(hex);
+        });
+
+        // --- Upload ---
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    uploadImage = img;
+                    // Size canvas to fit
+                    const maxW = uploadImageWrap.clientWidth || 600;
+                    const maxH = window.innerHeight * 0.55;
+                    let w = img.width, h = img.height;
+                    if (w > maxW) { h = h * (maxW / w); w = maxW; }
+                    if (h > maxH) { w = w * (maxH / h); h = maxH; }
+                    uploadCanvas.width = Math.round(w);
+                    uploadCanvas.height = Math.round(h);
+                    uploadCtx.drawImage(img, 0, 0, uploadCanvas.width, uploadCanvas.height);
+                    dropZone.style.display = 'none';
+                    uploadPreview.classList.add('active');
+                    announce('Image loaded. Tap on the image to identify a color.');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        });
+
+        // Drag and drop
+        ['dragenter', 'dragover'].forEach(evt => {
+            dropZone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+        });
+        ['dragleave', 'drop'].forEach(evt => {
+            dropZone.addEventListener(evt, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+            });
+        });
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length) handleFile(files[0]);
+        });
+        dropZone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                fileInput.click();
+            }
+        });
+
+        // Click on image to sample
+        uploadImageWrap.addEventListener('click', (e) => {
+            if (!uploadImage) return;
+            const rect = uploadCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            // Scale to canvas coords
+            const scaleX = uploadCanvas.width / rect.width;
+            const scaleY = uploadCanvas.height / rect.height;
+            const cx = Math.round(x * scaleX);
+            const cy = Math.round(y * scaleY);
+
+            const rgb = sampleArea(uploadCtx, cx, cy, 7);
+            if (!rgb) return;
+
+            // Show crosshair at click point
+            uploadCrosshair.style.left = (x + rect.left - uploadImageWrap.getBoundingClientRect().left) + 'px';
+            uploadCrosshair.style.top = (y + rect.top - uploadImageWrap.getBoundingClientRect().top) + 'px';
+            uploadCrosshair.classList.add('visible');
+
+            const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+            if (navigator.vibrate) navigator.vibrate(50);
+            identifyColor(hex);
+        });
+
+        // Mousemove crosshair
+        uploadImageWrap.addEventListener('mousemove', (e) => {
+            if (!uploadImage) return;
+            const rect = uploadCanvas.getBoundingClientRect();
+            const wrapRect = uploadImageWrap.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+                uploadCrosshair.style.left = (x + rect.left - wrapRect.left) + 'px';
+                uploadCrosshair.style.top = (y + rect.top - wrapRect.top) + 'px';
+                uploadCrosshair.classList.add('visible');
+            } else {
+                uploadCrosshair.classList.remove('visible');
+            }
+        });
+        uploadImageWrap.addEventListener('mouseleave', () => {
+            uploadCrosshair.classList.remove('visible');
+        });
+
+        // New image
+        uploadNewBtn.addEventListener('click', () => {
+            uploadImage = null;
+            uploadPreview.classList.remove('active');
+            dropZone.style.display = '';
+            uploadCrosshair.classList.remove('visible');
+            fileInput.value = '';
+        });
+
+        // --- Identify Color (API Call) ---
+        async function identifyColor(hex) {
+            showResult(hex);
+            resultSpinner.classList.add('active');
+            resultDescriptor.textContent = '';
+            resultFamily.textContent = '';
+            resultName.textContent = '';
+            resultQuality.textContent = '';
+            resultQuality.style.display = 'none';
+            resultValues.textContent = '';
+            resultMatchedHex.textContent = '';
+            resultMatched.style.background = 'var(--surface-raised)';
+            resultMatched.style.color = 'var(--text)';
+            harmoniesPanel.classList.remove('open');
+            harmoniesPanel.innerHTML = '';
+            harmoniesToggle.classList.remove('open');
+            harmoniesToggle.setAttribute('aria-expanded', 'false');
+
+            try {
+                const resp = await fetch(API + '/match', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hex })
+                });
+                if (!resp.ok) throw new Error('API error: ' + resp.status);
+                const data = await resp.json();
+                const match = data.matches && data.matches[0];
+                if (!match) throw new Error('No match found');
+
+                const matchedHex = match.hex.toUpperCase();
+                const matchedTextColor = getTextColor(matchedHex);
+                const descriptor = data.descriptor || '';
+                const family = data.family || '';
+                const name = match.name || '';
+                const quality = match.quality || '';
+                const rgb = match.rgb || [];
+
+                resultMatchedHex.textContent = matchedHex;
+                resultMatched.style.background = matchedHex;
+                resultMatched.style.color = matchedTextColor;
+
+                resultDescriptor.textContent = descriptor;
+                resultFamily.textContent = family;
+                resultName.textContent = `"${name}"`;
+                if (quality) {
+                    resultQuality.textContent = quality;
+                    resultQuality.dataset.quality = quality;
+                    resultQuality.style.display = 'inline-block';
+                }
+                resultValues.textContent = `${matchedHex}  ·  rgb(${rgb.join(', ')})`;
+
+                // Build harmonies
+                if (data.harmonies) {
+                    buildHarmonies(data.harmonies);
+                }
+
+                currentResult = {
+                    sampledHex: hex.toUpperCase(),
+                    matchedName: name,
+                    matchedHex: matchedHex,
+                    family: family,
+                    descriptor: descriptor,
+                    rgb: rgb
+                };
+
+                announce(`Color identified: ${descriptor}. Closest name: ${name}. ${quality} match. Hex ${matchedHex}.`);
+            } catch (err) {
+                resultDescriptor.textContent = 'Error';
+                resultName.textContent = err.message || 'Could not identify color';
+                resultValues.textContent = '';
+                currentResult = null;
+                announce('Could not identify color. Please try again.');
+            } finally {
+                resultSpinner.classList.remove('active');
+            }
+        }
+
+        function buildHarmonies(harmonies) {
+            const labels = {
+                complementary: 'Complementary — opposite, high contrast',
+                analogous: 'Analogous — neighbors, harmonious',
+                triadic: 'Triadic — balanced, vibrant',
+                split_complementary: 'Split Complementary — contrast with variety'
+            };
+            let html = '';
+            for (const [type, colors] of Object.entries(harmonies)) {
+                html += `<div class="harmony-group">
+                    <div class="harmony-label">${labels[type] || type}</div>
+                    <div class="harmony-swatches">`;
+                for (const c of colors) {
+                    const tc = getTextColor(c.hex);
+                    html += `<div class="harmony-chip" style="background:${c.hex};color:${tc}">
+                        <span class="harmony-chip-desc">${c.descriptor}</span>
+                        <span class="harmony-chip-hex">${c.hex.toUpperCase()}</span>
+                    </div>`;
+                }
+                html += `</div></div>`;
+            }
+            harmoniesPanel.innerHTML = html;
+        }
+
+        harmoniesToggle.addEventListener('click', () => {
+            const isOpen = harmoniesPanel.classList.toggle('open');
+            harmoniesToggle.classList.toggle('open', isOpen);
+            harmoniesToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        // --- Result Card ---
+        function showResult(sampledHex) {
+            const sampledUpper = sampledHex.toUpperCase();
+            const textColor = getTextColor(sampledUpper);
+            resultSampled.style.background = sampledUpper;
+            resultSampled.style.color = textColor;
+            resultSampledHex.textContent = sampledUpper;
+
+            resultSaveRow.classList.remove('active');
+            resultSaveInput.value = '';
+            resultSaveBtn.disabled = false;
+            resultSaveBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/>
+                    <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                Save
+            `;
+
+            currentResult = null;
+            resultOverlay.classList.add('open');
+            requestAnimationFrame(() => {
+                resultCard.classList.add('open');
+            });
+            resultClose.focus();
+        }
+
+        function hideResult() {
+            resultCard.classList.remove('open');
+            resultOverlay.classList.remove('open');
+            currentResult = null;
+        }
+
+        resultClose.addEventListener('click', hideResult);
+        resultOverlay.addEventListener('click', hideResult);
+        resultRetryBtn.addEventListener('click', hideResult);
+
+        // Escape key closes result card and detail modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (swatchDetailOverlay.classList.contains('open')) {
+                    closeSwatchDetail();
+                } else if (resultCard.classList.contains('open')) {
+                    hideResult();
+                }
+            }
+        });
+
+        // Save flow
+        resultSaveBtn.addEventListener('click', () => {
+            if (!currentResult) return;
+            resultSaveRow.classList.add('active');
+            resultSaveInput.focus();
+        });
+
+        function saveCurrentResult() {
+            if (!currentResult) return;
+            const label = resultSaveInput.value.trim();
+            const saved = getSaved();
+            saved.push({
+                id: generateId(),
+                label: label,
+                sampledHex: currentResult.sampledHex,
+                matchedName: currentResult.matchedName,
+                matchedHex: currentResult.matchedHex,
+                family: currentResult.family,
+                descriptor: currentResult.descriptor || currentResult.family,
+                savedAt: new Date().toISOString()
+            });
+            setSaved(saved);
+            resultSaveRow.classList.remove('active');
+            resultSaveBtn.disabled = true;
+            resultSaveBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                Saved
+            `;
+            announce('Color saved.');
+        }
+
+        resultSaveConfirm.addEventListener('click', saveCurrentResult);
+        resultSaveInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveCurrentResult();
+            }
+        });
+
+        // --- Saved Colors ---
+        function renderSaved() {
+            const saved = getSaved();
+            savedGrid.innerHTML = '';
+
+            if (saved.length === 0) {
+                savedEmpty.style.display = 'flex';
+                savedGrid.style.display = 'none';
+                return;
+            }
+
+            savedEmpty.style.display = 'none';
+            savedGrid.style.display = '';
+
+            // Show most recent first
+            const reversed = [...saved].reverse();
+            reversed.forEach(item => {
+                const textColor = getTextColor(item.matchedHex);
+                const card = document.createElement('div');
+                card.className = 'swatch-card';
+                card.tabIndex = 0;
+                card.setAttribute('role', 'button');
+                card.setAttribute('aria-label', `${item.matchedName}, ${item.family}${item.label ? ', labeled ' + item.label : ''}. Hex ${item.matchedHex}. Tap to view details.`);
+                card.innerHTML = `
+                    <div class="swatch-color" style="background:${item.matchedHex}; color:${textColor}">
+                        <span class="swatch-label">${escapeHtml(item.label || item.matchedName)}</span>
+                    </div>
+                    <div class="swatch-info">
+                        <span class="swatch-name">${escapeHtml(item.matchedName)}</span>
+                        <span class="swatch-family">${escapeHtml(item.family)}</span>
+                        <span class="swatch-hex">${item.matchedHex}</span>
+                    </div>
+                `;
+                card.addEventListener('click', () => openSwatchDetail(item.id));
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openSwatchDetail(item.id);
+                    }
+                });
+                savedGrid.appendChild(card);
+            });
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
+        // --- Swatch Detail ---
+        function openSwatchDetail(id) {
+            const saved = getSaved();
+            const item = saved.find(s => s.id === id);
+            if (!item) return;
+            currentDetailId = id;
+
+            const textColor = getTextColor(item.matchedHex);
+            swatchDetailColor.style.background = item.matchedHex;
+            swatchDetailColor.style.color = textColor;
+            detailName.textContent = item.matchedName;
+            detailFamily.textContent = item.family;
+            detailLabelInput.value = item.label || '';
+            detailSampledHex.textContent = item.sampledHex;
+            detailMatchedHex.textContent = item.matchedHex;
+            detailSavedAt.textContent = formatDate(item.savedAt);
+
+            swatchDetailOverlay.classList.add('open');
+            detailLabelInput.focus();
+        }
+
+        function closeSwatchDetail() {
+            swatchDetailOverlay.classList.remove('open');
+            currentDetailId = null;
+            renderSaved();
+        }
+
+        detailClose.addEventListener('click', closeSwatchDetail);
+        swatchDetailOverlay.addEventListener('click', (e) => {
+            if (e.target === swatchDetailOverlay) closeSwatchDetail();
+        });
+
+        detailSaveLabel.addEventListener('click', () => {
+            if (!currentDetailId) return;
+            const saved = getSaved();
+            const item = saved.find(s => s.id === currentDetailId);
+            if (item) {
+                item.label = detailLabelInput.value.trim();
+                setSaved(saved);
+                announce('Label saved.');
+            }
+        });
+
+        detailDelete.addEventListener('click', () => {
+            if (!currentDetailId) return;
+            const saved = getSaved().filter(s => s.id !== currentDetailId);
+            setSaved(saved);
+            announce('Color deleted.');
+            closeSwatchDetail();
+        });
+
+        // --- Export / Import ---
+        exportBtn.addEventListener('click', () => {
+            const saved = getSaved();
+            if (saved.length === 0) {
+                announce('No colors to export.');
+                return;
+            }
+            const blob = new Blob([JSON.stringify(saved, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'whatcolor-saved-' + new Date().toISOString().split('T')[0] + '.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            announce('Colors exported.');
+        });
+
+        importBtn.addEventListener('click', () => {
+            importInput.click();
+        });
+
+        importInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const imported = JSON.parse(ev.target.result);
+                    if (!Array.isArray(imported)) throw new Error('Invalid format');
+                    const existing = getSaved();
+                    const existingIds = new Set(existing.map(s => s.id));
+                    let added = 0;
+                    imported.forEach(item => {
+                        if (item.id && item.matchedHex && item.matchedName) {
+                            if (!existingIds.has(item.id)) {
+                                // Assign new ID to avoid collisions on re-import
+                                item.id = generateId();
+                                existing.push(item);
+                                added++;
+                            }
+                        }
+                    });
+                    setSaved(existing);
+                    renderSaved();
+                    announce(`Imported ${added} color${added !== 1 ? 's' : ''}.`);
+                } catch {
+                    announce('Could not import file. Make sure it is a valid JSON export.');
+                }
+                importInput.value = '';
+            };
+            reader.readAsText(file);
+        });
+
+        // --- Initialization ---
+        function init() {
+            // Detect mobile vs desktop for default tab
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+
+            if (isMobile && hasGetUserMedia) {
+                switchTab('tab-camera');
+            } else if (hasGetUserMedia) {
+                // Desktop with camera: still default to upload, camera available
+                switchTab('tab-upload');
+            } else {
+                // No camera support at all
+                switchTab('tab-upload');
+                // Hide camera tab messaging
+                cameraControls.style.display = 'none';
+                cameraCrosshair.style.display = 'none';
+                cameraMessage.style.display = 'flex';
+                cameraMessageText.textContent = 'Camera is not available in this browser. Use the Upload tab to identify colors from photos.';
+            }
+
+            renderSaved();
+        }
+
+        init();
+    })();
+    </script>
+    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
+    <script data-goatcounter="https://stats.dr.eamer.dev/count" async src="https://stats.dr.eamer.dev/count.js"></script>
+</body>
+</html>
