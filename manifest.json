@@ -2,6 +2,8 @@
   "name": "What Color Is This?",
   "short_name": "What Color",
   "description": "Aim your camera at a color — get its name, details, matches, plus colorblind palettes and simulation.",
+  "lang": "en",
+  "dir": "ltr",
   "start_url": "/",
   "scope": "/",
   "id": "/",
@@ -12,6 +14,46 @@
   "theme_color": "#1a1a1a",
   "categories": ["utilities", "lifestyle"],
   "iarc_rating_id": "",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "scope_extensions": [
+    { "origin": "https://whatcoloristhat.one" },
+    { "origin": "https://whatcolouristhat.com" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Camera",
+      "short_name": "Camera",
+      "url": "/?tab=camera",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Upload Photo",
+      "short_name": "Upload",
+      "url": "/?tab=upload",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Random Color",
+      "short_name": "Random",
+      "url": "/?tab=random",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "share_target": {
+    "action": "/?share=true",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "image",
+          "accept": ["image/png", "image/jpeg", "image/gif", "image/webp"]
+        }
+      ]
+    }
+  },
   "related_applications": [
     {
       "platform": "play",
@@ -60,6 +102,20 @@
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Colorblind-safe palettes"
+    },
+    {
+      "src": "screenshots/wide-camera.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Camera view on tablet"
+    },
+    {
+      "src": "screenshots/wide-result.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Color identification result"
     }
   ]
 }
