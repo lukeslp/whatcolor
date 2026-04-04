@@ -17,3 +17,7 @@ android/local.properties
 # Keystore (sensitive)
 android/keystore/
 android-build/*.jks
+
+# Binary distributions (use GitHub Releases)
+android-download/*.apk
+android-download/*.aab
