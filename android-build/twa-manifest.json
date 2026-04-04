@@ -32,7 +32,7 @@
   "isChromeOSOnly": false,
   "isMetaQuest": false,
   "fullScopeUrl": "https://whatcoloristhis.one/",
-  "minSdkVersion": 19,
+  "minSdkVersion": 21,
   "orientation": "portrait",
   "fingerprints": [
     {
