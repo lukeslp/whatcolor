@@ -2474,36 +2474,39 @@
             if (!currentResult || !currentApiData) return;
             const match = currentApiData.matches[0];
             const hex = match.hex.toUpperCase();
-            const tc = getTextColor(hex);
             const rgb = match.rgb || [];
-            const family = currentApiData.family;
+            const sampledHex = currentResult.sampledHex;
 
-            // Color each pyramid tier
-            const familyHex = FAMILY_HEX[family] || '#6B7280';
-            const familyTc = getTextColor(familyHex);
-            const descHex = descriptorColor(hex, familyHex);
-            const descTc = getTextColor(descHex);
+            // Sampled vs Matched comparison
+            document.getElementById('detail-sampled-swatch').style.background = sampledHex;
+            document.getElementById('detail-sampled-hex2').textContent = sampledHex;
+            document.getElementById('detail-matched-swatch').style.background = hex;
+            document.getElementById('detail-matched-hex2').textContent = hex;
 
-            const t1 = document.getElementById('detail-modal-family');
-            t1.textContent = family;
-            t1.style.background = familyHex;
-            t1.style.color = familyTc;
+            // Quality and distance
+            document.getElementById('detail-modal-quality').textContent = match.quality || '';
+            document.getElementById('detail-modal-distance').textContent = match.distance !== undefined ? match.distance.toFixed(2) : '';
 
-            const t2 = document.getElementById('detail-modal-descriptor');
-            t2.textContent = currentApiData.descriptor;
-            t2.style.background = descHex;
-            t2.style.color = descTc;
-
-            document.getElementById('detail-modal-name').textContent = match.name;
-            document.getElementById('detail-modal-hex-inline').textContent = hex;
-
-            const ns = document.getElementById('detail-modal-name-swatch');
-            ns.style.background = hex;
-            ns.style.color = tc;
-
+            // Values
             document.getElementById('detail-modal-hex').textContent = hex;
             document.getElementById('detail-modal-rgb').textContent = rgb.join(', ');
             document.getElementById('detail-modal-hsl').textContent = rgb.length >= 3 ? rgbToHsl(rgb[0], rgb[1], rgb[2]) : '';
+
+            // Close alternatives (matches 2-5)
+            const altList = document.getElementById('detail-alt-list');
+            altList.innerHTML = '';
+            const alts = currentApiData.matches.slice(1);
+            alts.forEach(alt => {
+                const altHex = alt.hex.toUpperCase();
+                const item = document.createElement('div');
+                item.className = 'detail-alt-item';
+                item.innerHTML = `
+                    <div class="detail-alt-swatch" style="background:${altHex}"></div>
+                    <span class="detail-alt-name">${alt.name}</span>
+                    <span class="detail-alt-hex hex-copy">${altHex}</span>
+                `;
+                altList.appendChild(item);
+            });
 
             openModal('details-overlay', 'details-modal');
         });
