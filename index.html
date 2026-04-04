@@ -1777,18 +1777,29 @@
             </button>
         </div>
         <div class="modal-body">
-            <div class="detail-pyramid">
-                <div class="pyramid-tier pyramid-tier-1" id="detail-modal-family"></div>
-                <div class="pyramid-arrow" aria-hidden="true">&#9660;</div>
-                <div class="pyramid-tier pyramid-tier-2" id="detail-modal-descriptor"></div>
-                <div class="pyramid-arrow" aria-hidden="true">&#9660;</div>
-                <div class="pyramid-tier pyramid-tier-3" id="detail-modal-name-swatch">
-                    <span id="detail-modal-name"></span>
-                    <span class="pyramid-tier-3-hex hex-copy" id="detail-modal-hex-inline"></span>
+            <div class="detail-compare" id="detail-compare">
+                <div class="detail-compare-item">
+                    <div class="detail-compare-swatch" id="detail-sampled-swatch"></div>
+                    <span class="detail-compare-label">Sampled</span>
+                    <span class="detail-compare-hex hex-copy" id="detail-sampled-hex2"></span>
+                </div>
+                <div class="detail-compare-arrow" aria-hidden="true">&rarr;</div>
+                <div class="detail-compare-item">
+                    <div class="detail-compare-swatch" id="detail-matched-swatch"></div>
+                    <span class="detail-compare-label">Matched</span>
+                    <span class="detail-compare-hex hex-copy" id="detail-matched-hex2"></span>
                 </div>
             </div>
 
             <div class="detail-values">
+                <div class="detail-row">
+                    <span class="detail-key">Match</span>
+                    <span class="detail-val" id="detail-modal-quality"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-key">Distance</span>
+                    <span class="detail-val" id="detail-modal-distance"></span>
+                </div>
                 <div class="detail-row">
                     <span class="detail-key">Hex</span>
                     <span class="detail-val hex-copy" id="detail-modal-hex"></span>
@@ -1801,6 +1812,11 @@
                     <span class="detail-key">HSL</span>
                     <span class="detail-val" id="detail-modal-hsl"></span>
                 </div>
+            </div>
+
+            <div class="detail-alternatives" id="detail-alternatives">
+                <div class="detail-key" style="margin-bottom:8px;">Close Alternatives</div>
+                <div class="detail-alt-list" id="detail-alt-list"></div>
             </div>
         </div>
     </div>
