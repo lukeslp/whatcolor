@@ -964,54 +964,74 @@
         .modal-body { padding: 16px 20px; }
 
         /* --- Details Modal --- */
-        /* Detail pyramid: each tier is a widening bar */
-        .detail-pyramid {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding: 12px 0 24px;
-        }
-        .pyramid-tier {
+        .detail-compare {
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
-            text-align: center;
-            text-transform: capitalize;
-            transition: background 0.3s ease;
+            gap: 12px;
+            padding: 12px 0 20px;
         }
-        .pyramid-tier-1 {
-            width: 50%;
-            padding: 10px 16px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-        .pyramid-arrow {
-            color: var(--border);
-            font-size: 0.7rem;
-        }
-        .pyramid-tier-2 {
-            width: 75%;
-            padding: 12px 16px;
-            font-size: 1.05rem;
-            font-weight: 600;
-        }
-        .pyramid-tier-3 {
-            width: 100%;
-            padding: 14px 16px;
-            font-size: 1.1rem;
-            font-weight: 700;
+        .detail-compare-item {
+            display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 4px;
+            flex: 1;
         }
-        .pyramid-tier-3-hex {
-            font-size: 0.8rem;
+        .detail-compare-swatch {
+            width: 100%;
+            height: 56px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .detail-compare-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+        }
+        .detail-compare-hex {
             font-family: 'Courier New', monospace;
-            font-weight: 500;
-            opacity: 0.75;
+            font-size: 0.75rem;
+        }
+        .detail-compare-arrow {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-top: -20px;
+        }
+        .detail-alternatives {
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+            margin-top: 8px;
+        }
+        .detail-alt-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .detail-alt-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+        }
+        .detail-alt-swatch {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+        .detail-alt-name {
+            flex: 1;
+            font-size: 0.85rem;
+            text-transform: capitalize;
+        }
+        .detail-alt-hex {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
 
         .detail-values {
