@@ -4,7 +4,7 @@
 What Color Is This?
 
 ## Short description (80 chars max)
-Point your camera at anything. Get its color by name — from 30,000 named colors.
+Point your camera at anything. Get its color by name, from 30,000 named colors.
 
 ## Full description
 
