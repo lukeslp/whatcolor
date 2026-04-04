@@ -12,7 +12,7 @@ I'm colorblind. "What color is this?" is the question everyone asks me when they
 
 So I built an app that actually answers it.
 
-Point your camera at anything — a dress, a paint swatch, a flower — and get the color's name instantly. The app matches against 30,000 named colors using CIEDE2000 perceptual distance, which means results correspond to how humans actually see color.
+Point your camera at anything (a dress, a paint swatch, a flower) and get the color's name instantly. The app matches against 30,000 named colors using CIEDE2000 perceptual distance, which means results correspond to how humans actually see color.
 
 Every color is identified in three levels:
 - A broad family (blue, red, green)
@@ -24,9 +24,9 @@ FEATURES
 - Camera identification with 7x7 pixel averaging for accuracy
 - White balance calibration for tricky lighting
 - Upload any photo and tap to sample colors
-- Color matches — complementary, analogous, triadic palettes
+- Color matches: complementary, analogous, triadic palettes
 - Colorblind-safe palettes based on the Wong (2011) research
-- Color vision simulation — see how colors appear under protanopia, deuteranopia, and tritanopia
+- Color vision simulation: see how colors appear under protanopia, deuteranopia, and tritanopia
 - Set your vision type for personalized results
 - Save colors with personal labels ("Sarah's favorite," "kitchen paint")
 - Export your color library as JSON
