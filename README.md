@@ -2,17 +2,17 @@
 
 I'm colorblind. This is the question everyone asks me when they find out.
 
-So I built an app that answers it. Point your camera at anything — a dress, a paint swatch, a sunset — and get the color's name instantly. It matches against 30,000 named colors using CIEDE2000 perceptual distance, which means the results actually correspond to how humans see color, not just how computers store it.
+So I built an app that answers it. Point your camera at anything (a dress, a paint swatch, a sunset) and get the color's name instantly. It matches against 30,000 named colors using CIEDE2000 perceptual distance, which means the results actually correspond to how humans see color, not just how computers store it.
 
 **[whatcoloristhis.one](https://whatcoloristhis.one)** · **[whatcoloristhat.one](https://whatcoloristhat.one)**
 
 ## What you get
 
-Every color is identified in three tiers:
+Every color gets three tiers of identification:
 
-- **Family** — the broad category (red, blue, teal, gray)
-- **Descriptor** — a qualified label ("light muted blue", "vivid orange", "very dark gray")
-- **Named match** — the closest of 30,000 named colors, ranked by perceptual distance
+- **Family**: the broad category (red, blue, teal, gray)
+- **Descriptor**: a qualified label ("light muted blue", "vivid orange", "very dark gray")
+- **Named match**: the closest of 30,000 named colors, ranked by perceptual distance
 
 ## Features
 
