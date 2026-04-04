@@ -24,8 +24,8 @@
     "path": "./whatcolor-keystore.jks",
     "alias": "whatcolor"
   },
-  "appVersionCode": 1,
-  "appVersionName": "1.0.0",
+  "appVersionCode": 2,
+  "appVersionName": "1.0.1",
   "splashScreenFadeOutDuration": 300,
   "fallbackType": "customtabs",
   "enableSiteSettingsShortcut": true,

@@ -7,3 +7,13 @@ colornames.json
 *.local.md
 *.local.json
 .env
+
+# Android build artifacts
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+
+# Keystore (sensitive)
+android/keystore/
+android-build/*.jks
