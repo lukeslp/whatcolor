@@ -2351,7 +2351,10 @@
         async function identifyColor(hex) {
             showResult(hex);
             resultSpinner.classList.add('active');
+            resultHeroFamily.textContent = '';
             resultHeroDescriptor.textContent = '';
+            resultHeroName.textContent = '';
+            resultHeroHex.textContent = '';
             resultHero.style.background = '';
             resultHero.style.color = '';
 
@@ -2371,7 +2374,10 @@
 
                 resultHero.style.background = matchedHex;
                 resultHero.style.color = tc;
+                resultHeroFamily.textContent = data.family;
                 resultHeroDescriptor.textContent = data.descriptor;
+                resultHeroName.textContent = match.name;
+                resultHeroHex.textContent = matchedHex;
 
                 currentApiData = data;
                 currentResult = {
