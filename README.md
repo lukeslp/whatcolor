@@ -48,6 +48,10 @@ GET  /api/random
 ```
 Random named color with descriptor and family.
 
+## Architecture
+
+The frontend is a single HTML file on purpose: zero build tools, one request, trivial to cache offline. The Python backend has no dependencies beyond Flask.
+
 ## Run locally
 
 ```bash
