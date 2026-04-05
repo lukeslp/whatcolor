@@ -693,9 +693,9 @@
             position: fixed;
             inset: 0;
             z-index: 150;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
             opacity: 0;
             pointer-events: none;
             transition: opacity var(--transition);
@@ -2452,7 +2452,7 @@
 
                 announce(`Color identified: ${data.descriptor}. ${match.name}.`);
             } catch (err) {
-                resultHeroDescriptor.textContent = 'Error';
+                resultHeroName.textContent = 'Error — try again';
                 currentResult = null;
                 currentApiData = null;
                 announce('Could not identify color. Please try again.');
