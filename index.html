@@ -1978,7 +1978,9 @@
         const resultCard = $('#result-card');
         const resultClose = $('#result-close');
         const resultHero = $('#result-hero');
+        const resultHeroFamily = $('#result-hero-family');
         const resultHeroDescriptor = $('#result-hero-descriptor');
+        const resultHeroMatch = $('#result-hero-match');
         const resultHeroName = $('#result-hero-name');
         const resultHeroHex = $('#result-hero-hex');
         const resultSpinner = $('#result-spinner');
@@ -2395,11 +2397,16 @@
         async function identifyColor(hex) {
             showResult(hex);
             resultSpinner.classList.add('active');
+            resultHeroFamily.textContent = '';
+            resultHeroFamily.style.background = '';
+            resultHeroFamily.style.color = '';
             resultHeroDescriptor.textContent = '';
+            resultHeroDescriptor.style.background = '';
+            resultHeroDescriptor.style.color = '';
+            resultHeroMatch.style.background = '';
+            resultHeroMatch.style.color = '';
             resultHeroName.textContent = '';
             resultHeroHex.textContent = '';
-            resultHero.style.background = '';
-            resultHero.style.color = '';
 
             try {
                 const resp = await fetch(API + '/match', {
