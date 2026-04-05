@@ -2422,9 +2422,21 @@
                 const matchedHex = match.hex.toUpperCase();
                 const tc = getTextColor(matchedHex);
 
-                resultHero.style.background = matchedHex;
-                resultHero.style.color = tc;
+                // Tier 1: Family
+                const familyHex = FAMILY_HEX[data.family] || '#6B7280';
+                resultHeroFamily.textContent = data.family;
+                resultHeroFamily.style.background = familyHex;
+                resultHeroFamily.style.color = getTextColor(familyHex);
+
+                // Tier 2: Descriptor
+                const descHex = descriptorColor(matchedHex, familyHex);
                 resultHeroDescriptor.textContent = data.descriptor;
+                resultHeroDescriptor.style.background = descHex;
+                resultHeroDescriptor.style.color = getTextColor(descHex);
+
+                // Tier 3: Matched color name + hex
+                resultHeroMatch.style.background = matchedHex;
+                resultHeroMatch.style.color = tc;
                 resultHeroName.textContent = match.name;
                 resultHeroHex.textContent = matchedHex;
 
