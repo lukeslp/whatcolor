@@ -80,4 +80,4 @@ MIT. See [LICENSE](LICENSE).
 
 ## Author
 
-**Luke Steuber** · [lukesteuber.com](https://lukesteuber.com) · [Bluesky](https://bsky.app/profile/lukesteuber.com) · [datapoems.io](https://datapoems.io)
+**Luke Steuber** · [lukesteuber.com](https://lukesteuber.com) · [Bluesky](https://bsky.app/profile/lukesteuber.com) · [More projects](https://dr.eamer.dev/downloads)
