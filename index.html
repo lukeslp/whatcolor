@@ -755,26 +755,18 @@
             padding: 16px 20px;
             transition: background 0.3s ease;
         }
-        .result-hero-family {
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            opacity: 0.7;
-            margin-bottom: 4px;
-        }
         .result-hero-descriptor {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.4rem;
+            font-weight: 700;
             text-transform: capitalize;
             letter-spacing: -0.01em;
-            margin-bottom: 8px;
         }
         .result-hero-name {
-            font-size: 1.6rem;
-            font-weight: 700;
+            font-size: 0.85rem;
+            font-weight: 500;
             text-transform: capitalize;
-            letter-spacing: -0.02em;
+            opacity: 0.8;
+            margin-top: 4px;
         }
         .result-hero-hex {
             font-size: 0.8rem;
@@ -1725,7 +1717,6 @@
 
         <!-- Hero swatch -->
         <div class="result-hero" id="result-hero">
-            <div class="result-hero-family" id="result-hero-family"></div>
             <div class="result-hero-descriptor" id="result-hero-descriptor"></div>
             <div class="result-hero-name" id="result-hero-name"></div>
             <div class="result-hero-hex hex-copy" id="result-hero-hex"></div>
@@ -1969,7 +1960,6 @@
         const resultCard = $('#result-card');
         const resultClose = $('#result-close');
         const resultHero = $('#result-hero');
-        const resultHeroFamily = $('#result-hero-family');
         const resultHeroDescriptor = $('#result-hero-descriptor');
         const resultHeroName = $('#result-hero-name');
         const resultHeroHex = $('#result-hero-hex');
@@ -2387,7 +2377,6 @@
         async function identifyColor(hex) {
             showResult(hex);
             resultSpinner.classList.add('active');
-            resultHeroFamily.textContent = '';
             resultHeroDescriptor.textContent = '';
             resultHeroName.textContent = '';
             resultHeroHex.textContent = '';
@@ -2410,7 +2399,6 @@
 
                 resultHero.style.background = matchedHex;
                 resultHero.style.color = tc;
-                resultHeroFamily.textContent = data.family;
                 resultHeroDescriptor.textContent = data.descriptor;
                 resultHeroName.textContent = match.name;
                 resultHeroHex.textContent = matchedHex;
