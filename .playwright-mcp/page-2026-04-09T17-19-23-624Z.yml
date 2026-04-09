@@ -1,0 +1,8 @@
+- generic [ref=e5]:
+  - heading "Color Vision Deficiency Test" [level=1] [ref=e6]:
+    - text: Color Vision
+    - text: Deficiency Test
+  - paragraph [ref=e7]:
+    - text: A real one, not marketing.
+    - text: With sources.
+  - generic [ref=e8]: whatcoloristhis.one/beta
