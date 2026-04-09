@@ -1,0 +1,109 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - main [ref=e3]:
+    - region "Test results" [ref=e48]:
+      - generic [ref=e49]:
+        - generic [ref=e50]: Color Vision Deficiency
+        - heading "Possible Mild Red-Green Deficiency" [level=2] [ref=e51]
+        - paragraph [ref=e52]: You missed 1 of 5 red-green plates, including the more subtle ones. This may indicate a mild color vision deficiency. The app can help you catch colors you might otherwise miss.
+        - generic [ref=e53]:
+          - heading "Your results plate by plate" [level=3] [ref=e54]
+          - generic [ref=e55]:
+            - generic [ref=e58]:
+              - generic [ref=e59]: Plate 1 · Control
+              - generic [ref=e60]: "12"
+            - generic [ref=e63]:
+              - generic [ref=e64]: Plate 2 · Red-green
+              - generic [ref=e65]: "74"
+            - generic [ref=e68]:
+              - generic [ref=e69]: Plate 3 · Red-green
+              - generic [ref=e70]: circle
+            - generic [ref=e73]:
+              - generic [ref=e74]: Plate 4 · Blue-yellow
+              - generic [ref=e75]: "2"
+            - generic [ref=e78]:
+              - generic [ref=e79]: Plate 5 · Red-green
+              - generic [ref=e80]: "3"
+              - generic [ref=e81]: "Answer: 8"
+            - generic [ref=e84]:
+              - generic [ref=e85]: Plate 6 · Blue-yellow
+              - generic [ref=e86]: circle
+              - generic [ref=e87]: "Answer: triangle"
+            - generic [ref=e90]:
+              - generic [ref=e91]: Plate 7 · Red-green
+              - generic [ref=e92]: "6"
+            - generic [ref=e95]:
+              - generic [ref=e96]: Plate 8 · Red-green
+              - generic [ref=e97]: star
+        - paragraph [ref=e98]: This screening is not a medical diagnosis. See an eye care professional for a clinical evaluation.
+        - generic [ref=e100]:
+          - heading "What Color Is This?" [level=2] [ref=e101]
+          - paragraph [ref=e102]: A color identification app built for how you actually see.
+          - generic [ref=e103]:
+            - generic [ref=e104]:
+              - generic [ref=e105]: 📷
+              - generic [ref=e106]: Camera identification from 30,000 named colors
+            - generic [ref=e107]:
+              - generic [ref=e108]: 🎨
+              - generic [ref=e109]: Colorblind-safe palettes based on research
+            - generic [ref=e110]:
+              - generic [ref=e111]: 👁
+              - generic [ref=e112]: CVD simulation so others see what you see
+            - generic [ref=e113]:
+              - generic [ref=e114]: 🔒
+              - generic [ref=e115]: "Privacy-first: no accounts, no tracking"
+          - generic [ref=e116]:
+            - generic [ref=e117]:
+              - textbox "Email for beta testing" [ref=e118]:
+                - /placeholder: your@email.com
+              - button "Join the Beta" [ref=e119] [cursor=pointer]
+            - paragraph [ref=e120]:
+              - text: I'll only email you about the beta. No spam.
+              - link "Privacy" [ref=e121] [cursor=pointer]:
+                - /url: https://whatcoloristhis.one/privacy.html
+          - paragraph
+        - generic [ref=e122]:
+          - heading "About this screening" [level=3] [ref=e123]
+          - paragraph [ref=e124]: "This is an 8-plate pseudoisochromatic screening that tests for red-green and blue-yellow color vision deficiency. It uses two established clinical methodologies:"
+          - paragraph [ref=e125]:
+            - strong [ref=e126]: Ishihara-style plates
+            - text: (5 plates) present numbers hidden in fields of colored dots. The foreground and background colors sit on opposite sides of the red-green or blue-yellow confusion axis, with matched luminance so hue is the only available cue. Individuals with color vision deficiency cannot distinguish the figure from the background.
+          - paragraph [ref=e127]:
+            - strong [ref=e128]: HRR-style plates
+            - text: (2 plates) use geometric shapes instead of numbers, which avoids digit-recognition bias and allows testing participants who cannot read numerals. The Hardy-Rand-Rittler test is the standard clinical complement to Ishihara for identifying both the type and severity of deficiency.
+          - paragraph [ref=e129]: "Plate 1 is a control: it uses luminance contrast rather than chromatic contrast, so it should be visible regardless of color vision type. If the control plate is missed, the result is flagged as inconclusive (likely a screen brightness or lighting issue)."
+          - paragraph [ref=e130]:
+            - strong [ref=e131]: "Limitations:"
+            - text: This is a screen-based approximation. Clinical Ishihara and HRR tests use precisely calibrated printed pigments under standardized illumination (CIE Illuminant C). Display color rendering varies by device, panel type, brightness, and ambient lighting. This screening can indicate the likely presence and type of color vision deficiency, but it cannot replace a clinical evaluation.
+          - paragraph [ref=e132]:
+            - strong [ref=e133]: References
+          - generic [ref=e134]:
+            - text: Ishihara, S. (1917).
+            - emphasis [ref=e135]: Tests for Colour-Blindness
+            - text: . Handaya, Tokyo, Hongo Harukicho.
+          - generic [ref=e136]:
+            - text: Hardy, L.H., Rand, G., & Rittler, M.C. (1954).
+            - emphasis [ref=e137]: HRR Pseudoisochromatic Plates for Detecting and Classifying Color Vision Deficiency
+            - text: . American Optical Company.
+          - generic [ref=e138]:
+            - text: Birch, J. (2012). Worldwide prevalence of red-green color deficiency.
+            - emphasis [ref=e139]: Journal of the Optical Society of America A
+            - text: ", 29(3), 313-320."
+          - generic [ref=e140]:
+            - text: Cole, B.L. (2007). Assessment of inherited colour vision defects in clinical practice.
+            - emphasis [ref=e141]: Clinical and Experimental Optometry
+            - text: ", 90(3), 157-175."
+        - button "Share this test" [ref=e143] [cursor=pointer]
+  - contentinfo [ref=e15]:
+    - paragraph [ref=e16]:
+      - text: Built by
+      - link "Luke Steuber" [ref=e17] [cursor=pointer]:
+        - /url: https://lukesteuber.com
+    - generic [ref=e18]:
+      - link "The App" [ref=e19] [cursor=pointer]:
+        - /url: https://whatcoloristhis.one
+      - link "Privacy" [ref=e20] [cursor=pointer]:
+        - /url: https://whatcoloristhis.one/privacy.html
+      - link "Bluesky" [ref=e21] [cursor=pointer]:
+        - /url: https://bsky.app/profile/lukesteuber.com
