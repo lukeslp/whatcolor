@@ -1,0 +1,28 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - main [ref=e3]:
+    - region "Color vision test" [ref=e22]:
+      - generic [ref=e23]:
+        - progressbar [ref=e24]
+        - paragraph [ref=e33]: Plate 6 of 8
+        - generic "Color vision test plate" [ref=e35]
+        - paragraph [ref=e36]: What shape do you see?
+        - generic [ref=e43]:
+          - button "Circle" [ref=e44] [cursor=pointer]
+          - button "Triangle" [ref=e45] [cursor=pointer]
+          - button "Star" [ref=e46] [cursor=pointer]
+          - button "Square" [ref=e47] [cursor=pointer]
+        - button "I can't see anything" [ref=e40] [cursor=pointer]
+  - contentinfo [ref=e15]:
+    - paragraph [ref=e16]:
+      - text: Built by
+      - link "Luke Steuber" [ref=e17] [cursor=pointer]:
+        - /url: https://lukesteuber.com
+    - generic [ref=e18]:
+      - link "The App" [ref=e19] [cursor=pointer]:
+        - /url: https://whatcoloristhis.one
+      - link "Privacy" [ref=e20] [cursor=pointer]:
+        - /url: https://whatcoloristhis.one/privacy.html
+      - link "Bluesky" [ref=e21] [cursor=pointer]:
+        - /url: https://bsky.app/profile/lukesteuber.com
