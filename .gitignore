@@ -21,3 +21,7 @@ android-build/*.jks
 # Binary distributions (use GitHub Releases)
 android-download/*.apk
 android-download/*.aab
+
+# Agent test artifacts
+.playwright-mcp/
+mask-check.png
