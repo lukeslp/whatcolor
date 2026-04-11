@@ -1,0 +1,31 @@
+- generic [active] [ref=e1]:
+  - link "Skip to content" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - main [ref=e3]:
+    - region "Color vision screening introduction" [ref=e4]:
+      - generic [ref=e5]:
+        - generic "Ishihara-style color vision test plate" [ref=e7]
+        - heading "Can you see the number?" [level=1] [ref=e8]
+        - paragraph [ref=e9]: 9-plate color vision screening inspired by Ishihara and HRR methodologies.
+        - paragraph [ref=e10]: Full brightness, good lighting. About 60 seconds.
+        - paragraph [ref=e11]:
+          - text: Uses pseudoisochromatic plates based on the
+          - link "Ishihara" [ref=e12] [cursor=pointer]:
+            - /url: "#about-screening"
+          - text: (1917) and
+          - link "HRR" [ref=e13] [cursor=pointer]:
+            - /url: "#about-screening"
+          - text: (1954) clinical tests. Not a medical diagnosis.
+        - button "Start Screening" [ref=e14] [cursor=pointer]
+  - contentinfo [ref=e15]:
+    - paragraph [ref=e16]:
+      - text: Built by
+      - link "Luke Steuber" [ref=e17] [cursor=pointer]:
+        - /url: https://lukesteuber.com
+    - generic [ref=e18]:
+      - link "The App" [ref=e19] [cursor=pointer]:
+        - /url: https://whatcoloristhis.one
+      - link "Privacy" [ref=e20] [cursor=pointer]:
+        - /url: https://whatcoloristhis.one/privacy.html
+      - link "Bluesky" [ref=e21] [cursor=pointer]:
+        - /url: https://bsky.app/profile/lukesteuber.com
