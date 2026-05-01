@@ -59,7 +59,7 @@ pip install flask flask-cors
 python api.py
 ```
 
-Runs on port 5010. You'll need the color database — grab [`colornames.json`](https://github.com/nicedoc/colornames/blob/master/colornames.json) (29,956 named colors, each `{"name": "...", "hex": "#RRGGBB"}`) and place it in the project root.
+Runs on port 5010. You'll need the color database: grab [`colornames.json`](https://github.com/nicedoc/colornames/blob/master/colornames.json) (29,956 named colors, each `{"name": "...", "hex": "#RRGGBB"}`) and place it in the project root.
 
 ## Color math
 
